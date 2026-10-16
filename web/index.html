@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>मुनीम (Munim) — Local Bill Diary & Price Alerts</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="logo-badge">म</div>
+      <div>
+        <div class="brand-title" id="t-brand">मुनीम (Munim)</div>
+        <div class="brand-subtitle" id="t-sub">Powered by Gemma, running on this computer</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <select id="model-select" class="btn btn-secondary" style="background: var(--bg-surface); color: var(--text-main); font-size: 0.85rem; padding: 6px 10px;">
+        <option value="gemma3:12b">Gemma 3 12B (Default)</option>
+        <option value="gemma3:4b">Gemma 3 4B (Low RAM)</option>
+        <option value="gemma3:27b">Gemma 3 27B (High Accuracy)</option>
+      </select>
+      <button class="btn btn-secondary" id="lang-toggle">English / हिन्दी</button>
+      <button class="btn btn-secondary" id="qr-btn">📱 <span id="t-qr-nav-btn">Phone QR</span></button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top Summary Metrics with Month Picker -->
+    <div class="metrics-grid">
+      <div class="metric-card gold">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div class="metric-title" id="t-monthly-spend" style="margin-bottom: 0;">Spend</div>
+          <input type="month" id="spend-month-picker" class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border);">
+        </div>
+        <div class="metric-val" id="val-monthly-spend">₹0.00</div>
+        <div class="metric-sub" id="val-bills-count">0 bills processed</div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-title" id="t-open-alerts">Open Price Alerts</div>
+        <div class="metric-val" id="val-alerts-count">0</div>
+        <div class="metric-sub" id="t-price-spikes">Price spikes & savings</div>
+      </div>
+      <div class="metric-card blue">
+        <div class="metric-title" id="t-total-dues">Supplier Dues</div>
+        <div class="metric-val" id="val-dues-amount">₹0.00</div>
+        <div class="metric-sub" id="val-overdue-sub">0 overdue bills</div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-title" id="t-needs-review">Needs Review</div>
+        <div class="metric-val" id="val-review-count">0</div>
+        <div class="metric-sub" id="t-review-sub">Low confidence or math errors</div>
+      </div>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="upload-card" id="drop-zone">
+      <input type="file" id="file-input" accept="image/*,application/pdf" capture="environment" style="display: none;">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text" id="t-upload-title">Photograph or Upload Bill</div>
+      <div class="upload-hint" id="t-upload-sub">Take a photo from your phone or drop a supplier bill here. Local vision AI extracts items in seconds.</div>
+      <button class="btn btn-primary btn-large" style="margin-top: 16px;" onclick="document.getElementById('file-input').click()">
+        <span>📤</span> <span id="t-upload-btn">Upload / Capture Bill</span>
+      </button>
+    </div>
+
+    <!-- Price Alerts Section -->
+    <div class="section-header">
+      <div class="section-title">
+        <span>⚡</span> <span id="t-alerts-title">Price-Change Alerts</span>
+        <span class="badge badge-warning" id="alerts-badge">0 Active</span>
+      </div>
+    </div>
+    <div class="alerts-list" id="alerts-container">
+      <div style="color: var(--text-muted); font-size: 0.9rem; padding: 12px 0;" id="t-no-alerts">No active price alerts. All supplier rates are stable.</div>
+    </div>
+
+    <!-- Supplier Dues Section -->
+    <div class="section-header">
+      <div class="section-title">
+        <span>🤝</span> <span id="t-dues-title">Supplier Dues & Outstanding</span>
+      </div>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th id="th-supplier">Supplier Name</th>
+            <th id="th-total-billed">Total Billed</th>
+            <th id="th-total-paid">Total Paid</th>
+            <th id="th-balance-due">Balance Due</th>
+            <th id="th-earliest-due">Due Date</th>
+            <th id="th-status">Status</th>
+            <th id="th-action">Action</th>
+          </tr>
+        </thead>
+        <tbody id="dues-tbody">
+          <tr><td colspan="7" style="text-align:center; color:var(--text-muted)" id="t-no-dues">No outstanding supplier dues.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bills Ledger & CA Pack Export -->
+    <div class="section-header">
+      <div class="section-title">
+        <span>📑</span> <span id="t-ledger-title">Invoices & Bills Ledger</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <select id="ledger-month-filter" class="btn btn-secondary" style="color: var(--text-main); background: var(--bg-surface); padding: 6px 12px; font-size: 0.85rem;">
+          <option value="ALL">All Invoices / सभी बिल</option>
+        </select>
+        <input type="month" id="export-month" class="btn btn-secondary" style="color: var(--text-main); background: var(--bg-surface);">
+        <a id="ca-pack-btn" href="/api/export/ca" class="btn btn-secondary"><span id="t-btn-ca-pack">📥 CA Pack CSV</span></a>
+        <a id="tally-btn" href="/api/export/tally" class="btn btn-secondary"><span id="t-btn-tally">📊 Tally CSV</span></a>
+      </div>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th id="th-inv-no">Bill #</th>
+            <th id="th-inv-date">Date</th>
+            <th id="th-inv-supplier">Supplier</th>
+            <th id="th-inv-total">Amount</th>
+            <th id="th-inv-val">Validation</th>
+            <th id="th-inv-payment">Payment</th>
+            <th id="th-inv-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bills-tbody">
+          <tr><td colspan="7" style="text-align:center; color:var(--text-muted)" id="t-no-bills">No bills uploaded yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- QR Modal with LAN URL as text -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <div class="modal-header">
+        <h3 id="t-qr-title">Open on Mobile Camera</h3>
+        <button class="close-btn" onclick="document.getElementById('qr-modal').style.display='none'">&times;</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;" id="t-qr-sub">Scan this code with your phone while connected to the same Wi-Fi.</p>
+      <img src="/api/qr" alt="QR Code" style="width: 240px; height: 240px; border-radius: 8px; margin: 0 auto; display: block; background: #fff; padding: 12px;">
+      <div style="margin-top: 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: monospace; font-size: 0.95rem; color: var(--accent-gold); word-break: break-all;" id="qr-lan-url">
+        http://...
+      </div>
+    </div>
+  </div>
+
+  <!-- Review / Edit Bill Modal (Side-by-side desktop layout & full editability) -->
+  <div class="modal-overlay" id="review-modal">
+    <div class="modal-content modal-review-large">
+      <div class="modal-header">
+        <h3 id="review-modal-title">Review & Verify Bill</h3>
+        <button class="close-btn" onclick="document.getElementById('review-modal').style.display='none'">&times;</button>
+      </div>
+      
+      <!-- Bilingual Plain-Language Error Banner -->
+      <div id="review-validation-errors" class="validation-banner" style="display: none;"></div>
+
+      <div class="review-grid">
+        <!-- Left Column: Bill Image with Zoom -->
+        <div class="review-image-pane">
+          <div class="image-zoom-container" id="zoom-container">
+            <img id="review-bill-img" src="" alt="Bill Image" title="Click to zoom image" onclick="toggleZoomImage()">
+          </div>
+          <div style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;" id="t-zoom-hint">Click image to toggle zoom</div>
+        </div>
+
+        <!-- Right Column: Editable Fields -->
+        <div class="review-fields-pane">
+          <!-- Top-Level Invoice Headers -->
+          <div class="fields-section-title" id="t-header-details">Invoice Details</div>
+          <div class="form-grid-2">
+            <div class="form-group" id="group-vendor_name">
+              <label id="lbl-supplier">Supplier Name</label>
+              <input type="text" id="edit-vendor-name" class="form-input">
+            </div>
+            <div class="form-group" id="group-vendor_gstin">
+              <label id="lbl-gstin">Supplier GSTIN</label>
+              <input type="text" id="edit-vendor-gstin" class="form-input" style="text-transform: uppercase;">
+            </div>
+            <div class="form-group" id="group-invoice_number">
+              <label id="lbl-inv-num">Invoice Number</label>
+              <input type="text" id="edit-invoice-number" class="form-input">
+            </div>
+            <div class="form-group" id="group-invoice_date">
+              <label id="lbl-inv-date">Invoice Date</label>
+              <input type="date" id="edit-invoice-date" class="form-input">
+            </div>
+          </div>
+
+          <!-- Line Items Table -->
+          <div class="fields-section-title" style="margin-top: 14px;" id="t-items-details">Line Items</div>
+          <div style="overflow-x: auto; max-height: 220px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px;">
+            <table class="items-table" style="margin-bottom: 0;">
+              <thead>
+                <tr>
+                  <th style="min-width: 140px;">Description</th>
+                  <th style="width: 80px;">HSN</th>
+                  <th style="width: 80px;">Pack</th>
+                  <th style="width: 70px;">Qty</th>
+                  <th style="width: 80px;">Rate (₹)</th>
+                  <th style="width: 70px;">GST %</th>
+                  <th style="width: 90px;">Taxable (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="review-items-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- Tax & Totals Breakdown -->
+          <div class="fields-section-title" id="t-tax-totals">Taxes & Totals</div>
+          <div class="form-grid-3">
+            <div class="form-group" id="group-subtotal">
+              <label id="lbl-subtotal">Subtotal (₹)</label>
+              <input type="number" step="0.01" id="edit-subtotal" class="form-input" oninput="recalculateGrandTotal()">
+            </div>
+            <div class="form-group" id="group-cgst">
+              <label id="lbl-cgst">CGST (₹)</label>
+              <input type="number" step="0.01" id="edit-cgst" class="form-input" oninput="recalculateGrandTotal()">
+            </div>
+            <div class="form-group" id="group-sgst">
+              <label id="lbl-sgst">SGST (₹)</label>
+              <input type="number" step="0.01" id="edit-sgst" class="form-input" oninput="recalculateGrandTotal()">
+            </div>
+            <div class="form-group" id="group-igst">
+              <label id="lbl-igst">IGST (₹)</label>
+              <input type="number" step="0.01" id="edit-igst" class="form-input" oninput="recalculateGrandTotal()">
+            </div>
+            <div class="form-group" id="group-round_off">
+              <label id="lbl-roundoff">Round Off (₹)</label>
+              <input type="number" step="0.01" id="edit-roundoff" class="form-input" oninput="recalculateGrandTotal()">
+            </div>
+            <div class="form-group" id="group-total">
+              <label id="lbl-grandtotal" style="font-weight: 700; color: var(--accent-gold);">Grand Total (₹)</label>
+              <input type="number" step="0.01" id="edit-total" class="form-input" style="font-weight: 700; border-color: var(--accent-gold);">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <div style="font-weight: 700; font-size: 1.15rem;">
+          <span id="lbl-total-summary">Total</span>: <span id="review-bill-total-display">₹0.00</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="document.getElementById('review-modal').style.display='none'" id="btn-cancel-review">Cancel</button>
+          <button class="btn btn-primary" id="review-approve-btn">Approve & Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal with supplier, bill #, remaining balance, date, and payment mode -->
+  <div class="modal-overlay" id="pay-modal">
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="t-pay-title">Record Supplier Payment</h3>
+        <button class="close-btn" onclick="document.getElementById('pay-modal').style.display='none'">&times;</button>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: var(--text-muted); font-size: 0.85rem;" id="lbl-pay-supplier">Supplier:</span>
+          <span style="font-weight: 600;" id="pay-supplier-name">—</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: var(--text-muted); font-size: 0.85rem;" id="lbl-pay-billnum">Bill #:</span>
+          <span style="font-weight: 600;" id="pay-bill-number">—</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-muted); font-size: 0.85rem;" id="lbl-pay-balance">Remaining Balance:</span>
+          <span style="font-weight: 700; color: var(--accent-gold);" id="pay-remaining-balance">₹0.00</span>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label id="lbl-pay-amount">Payment Amount (₹)</label>
+        <input type="number" step="0.01" id="pay-amount-input" class="form-input" style="font-size: 1.15rem; font-weight: 700;">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label id="lbl-pay-date">Payment Date</label>
+        <input type="date" id="pay-date-input" class="form-input">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label id="lbl-pay-mode">Payment Mode</label>
+        <select id="pay-mode-select" class="form-input">
+          <option value="UPI">UPI (Google Pay, PhonePe, Paytm)</option>
+          <option value="Cash">Cash (नकद)</option>
+          <option value="Bank">Bank Transfer / Cheque (NEFT/RTGS)</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" id="confirm-pay-btn" style="width: 100%; justify-content: center; font-size: 1rem; padding: 12px;">
+        <span id="t-save-payment-btn">Record Payment</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Processing Spinner Overlay -->
+  <div class="modal-overlay" id="loading-overlay">
+    <div class="modal-content" style="max-width: 320px; text-align: center; background: rgba(15, 23, 42, 0.95);">
+      <div class="spinner"></div>
+      <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 6px;" id="t-reading-bill">मुनीम बिल पढ़ रहा है...</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;" id="t-reading-sub">Local vision AI analyzing items & calculating taxes...</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

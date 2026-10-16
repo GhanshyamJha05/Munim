@@ -1,0 +1,1673 @@
+[
+  {
+    "bill_id": 1,
+    "file_name": "bill_001_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-001",
+      "invoice_date": "2026-08-19",
+      "due_date": "2026-09-18",
+      "line_items": [
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 5,
+          "unit_price": 118,
+          "taxable_value": 590,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 24,
+          "taxable_value": 240,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 830,
+      "cgst": 59.1,
+      "sgst": 59.1,
+      "igst": 0,
+      "round_off": 0,
+      "total": 948.2,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 2,
+    "file_name": "bill_002_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-002",
+      "invoice_date": "2026-08-21",
+      "due_date": "2026-09-20",
+      "line_items": [
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 24,
+          "taxable_value": 120,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 10,
+          "unit_price": 135,
+          "taxable_value": 1350,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 380,
+          "taxable_value": 5700,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 7170,
+      "cgst": 179.25,
+      "sgst": 179.25,
+      "igst": 0,
+      "round_off": 0,
+      "total": 7528.5,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 3,
+    "file_name": "bill_003_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-003",
+      "invoice_date": "2026-08-23",
+      "due_date": "2026-09-22",
+      "line_items": [
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 5,
+          "unit_price": 135,
+          "taxable_value": 675,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 380,
+          "taxable_value": 3800,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 38,
+          "taxable_value": 570,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 20,
+          "unit_price": 14,
+          "taxable_value": 280,
+          "gst_rate": 12
+        }
+      ],
+      "subtotal": 5325,
+      "cgst": 179.98,
+      "sgst": 179.98,
+      "igst": 0,
+      "round_off": 0,
+      "total": 5684.95,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 4,
+    "file_name": "bill_004_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-004",
+      "invoice_date": "2026-08-25",
+      "due_date": "2026-09-24",
+      "line_items": [
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 380,
+          "taxable_value": 1900,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 44,
+          "taxable_value": 440,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 2340,
+      "cgst": 87.1,
+      "sgst": 87.1,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2514.2,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "expected_alerts": [
+      "Dettol Original Soap 75g is available cheaper from Kailash Agro Foods"
+    ]
+  },
+  {
+    "bill_id": 5,
+    "file_name": "bill_005_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-005",
+      "invoice_date": "2026-08-27",
+      "due_date": "2026-09-26",
+      "line_items": [
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 38,
+          "taxable_value": 190,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 14,
+          "taxable_value": 140,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 145,
+          "taxable_value": 2175,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 2505,
+      "cgst": 221.25,
+      "sgst": 221.25,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2947.5,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 6,
+    "file_name": "bill_006_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-006",
+      "invoice_date": "2026-08-29",
+      "due_date": "2026-09-28",
+      "line_items": [
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 14,
+          "taxable_value": 70,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 145,
+          "taxable_value": 1450,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 110,
+          "taxable_value": 1650,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 20,
+          "unit_price": 118,
+          "taxable_value": 2360,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 5530,
+      "cgst": 495.6,
+      "sgst": 495.6,
+      "igst": 0,
+      "round_off": 0,
+      "total": 6521.2,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 7,
+    "file_name": "bill_007_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-007",
+      "invoice_date": "2026-08-31",
+      "due_date": "2026-09-30",
+      "line_items": [
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 145,
+          "taxable_value": 725,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 110,
+          "taxable_value": 1100,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 1825,
+      "cgst": 164.25,
+      "sgst": 164.25,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2153.5,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 8,
+    "file_name": "bill_008_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1Z0",
+      "invoice_number": "INV-2026-008",
+      "invoice_date": "2026-09-02",
+      "due_date": "2026-10-02",
+      "line_items": [
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 110,
+          "taxable_value": 550,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 10,
+          "unit_price": 118,
+          "taxable_value": 1180,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 24,
+          "taxable_value": 360,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 2090,
+      "cgst": 164.7,
+      "sgst": 164.7,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2419.4,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "deliberate_anomaly": "invalid_gstin"
+  },
+  {
+    "bill_id": 9,
+    "file_name": "bill_009_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-009",
+      "invoice_date": "2026-09-04",
+      "due_date": "2026-10-04",
+      "line_items": [
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 5,
+          "unit_price": 118,
+          "taxable_value": 590,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 24,
+          "taxable_value": 240,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 15,
+          "unit_price": 135,
+          "taxable_value": 2025,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 20,
+          "unit_price": 380,
+          "taxable_value": 7600,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 10455,
+      "cgst": 299.73,
+      "sgst": 299.73,
+      "igst": 0,
+      "round_off": 0,
+      "total": 11054.45,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 10,
+    "file_name": "bill_010_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-010",
+      "invoice_date": "2026-09-06",
+      "due_date": "2026-10-06",
+      "line_items": [
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 24,
+          "taxable_value": 120,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 10,
+          "unit_price": 135,
+          "taxable_value": 1350,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 1470,
+      "cgst": 36.75,
+      "sgst": 36.75,
+      "igst": 0,
+      "round_off": 0,
+      "total": 1543.5,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 11,
+    "file_name": "bill_011_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-011",
+      "invoice_date": "2026-09-08",
+      "due_date": "2026-10-08",
+      "line_items": [
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 5,
+          "unit_price": 135,
+          "taxable_value": 675,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 380,
+          "taxable_value": 3800,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 38,
+          "taxable_value": 570,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 5045,
+      "cgst": 163.18,
+      "sgst": 163.18,
+      "igst": 0,
+      "round_off": 0,
+      "total": 5371.35,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 12,
+    "file_name": "bill_012_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-012",
+      "invoice_date": "2026-09-10",
+      "due_date": "2026-10-10",
+      "line_items": [
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 380,
+          "taxable_value": 1900,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 38,
+          "taxable_value": 380,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 14,
+          "taxable_value": 210,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 20,
+          "unit_price": 145,
+          "taxable_value": 2900,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 5390,
+      "cgst": 355.3,
+      "sgst": 355.3,
+      "igst": 0,
+      "round_off": 0,
+      "total": 6150.6,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "deliberate_anomaly": "bad_math"
+  },
+  {
+    "bill_id": 13,
+    "file_name": "bill_013_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-013",
+      "invoice_date": "2026-09-12",
+      "due_date": "2026-10-12",
+      "line_items": [
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 38,
+          "taxable_value": 190,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 14,
+          "taxable_value": 140,
+          "gst_rate": 12
+        }
+      ],
+      "subtotal": 330,
+      "cgst": 25.5,
+      "sgst": 25.5,
+      "igst": 0,
+      "round_off": 0,
+      "total": 381,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 14,
+    "file_name": "bill_014_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-014",
+      "invoice_date": "2026-09-14",
+      "due_date": "2026-10-14",
+      "line_items": [
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 14,
+          "taxable_value": 70,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 145,
+          "taxable_value": 1450,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 110,
+          "taxable_value": 1650,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 3170,
+      "cgst": 283.2,
+      "sgst": 283.2,
+      "igst": 0,
+      "round_off": 0,
+      "total": 3736.4,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 15,
+    "file_name": "bill_015_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-015",
+      "invoice_date": "2026-09-16",
+      "due_date": "2026-10-16",
+      "line_items": [
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 145,
+          "taxable_value": 725,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 110,
+          "taxable_value": 1100,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 15,
+          "unit_price": 118,
+          "taxable_value": 1770,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 20,
+          "unit_price": 24,
+          "taxable_value": 480,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 4075,
+      "cgst": 335.55,
+      "sgst": 335.55,
+      "igst": 0,
+      "round_off": 0,
+      "total": 4746.1,
+      "language_detected": "English",
+      "confidence": 0.62
+    },
+    "deliberate_anomaly": "low_confidence_total"
+  },
+  {
+    "bill_id": 16,
+    "file_name": "bill_016_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-016",
+      "invoice_date": "2026-09-18",
+      "due_date": "2026-10-18",
+      "line_items": [
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 110,
+          "taxable_value": 550,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 10,
+          "unit_price": 118,
+          "taxable_value": 1180,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 1730,
+      "cgst": 155.7,
+      "sgst": 155.7,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2041.4,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 17,
+    "file_name": "bill_017_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-017",
+      "invoice_date": "2026-09-20",
+      "due_date": "2026-10-20",
+      "line_items": [
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 5,
+          "unit_price": 118,
+          "taxable_value": 590,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 24,
+          "taxable_value": 240,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 15,
+          "unit_price": 135,
+          "taxable_value": 2025,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 2855,
+      "cgst": 109.73,
+      "sgst": 109.73,
+      "igst": 0,
+      "round_off": 0,
+      "total": 3074.45,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 18,
+    "file_name": "bill_018_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-018",
+      "invoice_date": "2026-09-22",
+      "due_date": "2026-10-22",
+      "line_items": [
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 24,
+          "taxable_value": 120,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 10,
+          "unit_price": 135,
+          "taxable_value": 1350,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 380,
+          "taxable_value": 5700,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 20,
+          "unit_price": 38,
+          "taxable_value": 760,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 7930,
+      "cgst": 247.65,
+      "sgst": 247.65,
+      "igst": 0,
+      "round_off": 0,
+      "total": 8425.3,
+      "language_detected": "Hinglish/Hindi",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 19,
+    "file_name": "bill_019_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-019",
+      "invoice_date": "2026-09-24",
+      "due_date": "2026-10-24",
+      "line_items": [
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 5,
+          "unit_price": 135,
+          "taxable_value": 675,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 380,
+          "taxable_value": 3800,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 4475,
+      "cgst": 111.88,
+      "sgst": 111.88,
+      "igst": 0,
+      "round_off": 0,
+      "total": 4698.75,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 20,
+    "file_name": "bill_020_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-020",
+      "invoice_date": "2026-09-26",
+      "due_date": "2026-10-26",
+      "line_items": [
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 380,
+          "taxable_value": 1900,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 38,
+          "taxable_value": 380,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 14,
+          "taxable_value": 210,
+          "gst_rate": 12
+        }
+      ],
+      "subtotal": 2490,
+      "cgst": 94.3,
+      "sgst": 94.3,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2678.6,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 21,
+    "file_name": "bill_021_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-021",
+      "invoice_date": "2026-09-28",
+      "due_date": "2026-10-28",
+      "line_items": [
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 38,
+          "taxable_value": 190,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 14,
+          "taxable_value": 140,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 145,
+          "taxable_value": 2175,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 20,
+          "unit_price": 110,
+          "taxable_value": 2200,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 4705,
+      "cgst": 419.25,
+      "sgst": 419.25,
+      "igst": 0,
+      "round_off": 0,
+      "total": 5543.5,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 22,
+    "file_name": "bill_022_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-022",
+      "invoice_date": "2026-09-30",
+      "due_date": "2026-10-30",
+      "line_items": [
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 14,
+          "taxable_value": 70,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 155,
+          "taxable_value": 1550,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 1620,
+      "cgst": 143.7,
+      "sgst": 143.7,
+      "igst": 0,
+      "round_off": 0,
+      "total": 1907.4,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "expected_alerts": [
+      "Surf Excel Quick Wash 1kg price spike"
+    ]
+  },
+  {
+    "bill_id": 23,
+    "file_name": "bill_023_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-023",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-01",
+      "line_items": [
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 145,
+          "taxable_value": 725,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 120,
+          "taxable_value": 1200,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 15,
+          "unit_price": 118,
+          "taxable_value": 1770,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 3695,
+      "cgst": 332.55,
+      "sgst": 332.55,
+      "igst": 0,
+      "round_off": 0,
+      "total": 4360.1,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "expected_alerts": [
+      "Colgate Strong Teeth 200g price spike"
+    ]
+  },
+  {
+    "bill_id": 24,
+    "file_name": "bill_024_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-024",
+      "invoice_date": "2026-10-04",
+      "due_date": "2026-11-03",
+      "line_items": [
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 110,
+          "taxable_value": 550,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 10,
+          "unit_price": 118,
+          "taxable_value": 1180,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 24,
+          "taxable_value": 360,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 20,
+          "unit_price": 145,
+          "taxable_value": 2900,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 4990,
+      "cgst": 237.2,
+      "sgst": 237.2,
+      "igst": 0,
+      "round_off": 0,
+      "total": 5464.4,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "expected_alerts": [
+      "Fortune Sunlite Sunflower Oil 1L is 7.4% higher than on your last bill"
+    ]
+  },
+  {
+    "bill_id": 25,
+    "file_name": "bill_025_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-025",
+      "invoice_date": "2026-10-06",
+      "due_date": "2026-11-05",
+      "line_items": [
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 5,
+          "unit_price": 123,
+          "taxable_value": 615,
+          "gst_rate": 18
+        },
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 24,
+          "taxable_value": 240,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 855,
+      "cgst": 61.35,
+      "sgst": 61.35,
+      "igst": 0,
+      "round_off": 0,
+      "total": 977.7,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "expected_alerts": [
+      "Parle-G 12-pack is 4.2% higher than on your last bill from Sharma Distributors"
+    ]
+  },
+  {
+    "bill_id": 26,
+    "file_name": "bill_026_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-026",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-07",
+      "line_items": [
+        {
+          "description": "Tata Salt Vacuum Evaporated 1kg",
+          "description_normalized": "",
+          "hsn_code": "2501",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 24,
+          "taxable_value": 120,
+          "gst_rate": 5
+        },
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 10,
+          "unit_price": 135,
+          "taxable_value": 1350,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 410,
+          "taxable_value": 6150,
+          "gst_rate": 5
+        }
+      ],
+      "subtotal": 7620,
+      "cgst": 190.5,
+      "sgst": 190.5,
+      "igst": 0,
+      "round_off": 0,
+      "total": 8001,
+      "language_detected": "English",
+      "confidence": 0.95
+    },
+    "expected_alerts": [
+      "Aashirvaad Shudh Chakki Atta 10kg price spike"
+    ]
+  },
+  {
+    "bill_id": 27,
+    "file_name": "bill_027_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-027",
+      "invoice_date": "2026-10-10",
+      "due_date": "2026-11-09",
+      "line_items": [
+        {
+          "description": "Fortune Sunlite Sunflower Oil 1L",
+          "description_normalized": "",
+          "hsn_code": "1512",
+          "pack_size": "1l",
+          "unit": "l",
+          "quantity": 5,
+          "unit_price": 135,
+          "taxable_value": 675,
+          "gst_rate": 5
+        },
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 380,
+          "taxable_value": 3800,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 38,
+          "taxable_value": 570,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 20,
+          "unit_price": 14,
+          "taxable_value": 280,
+          "gst_rate": 12
+        }
+      ],
+      "subtotal": 5325,
+      "cgst": 179.98,
+      "sgst": 179.98,
+      "igst": 0,
+      "round_off": 0,
+      "total": 5684.95,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 28,
+    "file_name": "bill_028_Sharma_Distributors.jpg",
+    "distributor": "Sharma Distributors",
+    "expected_data": {
+      "vendor_name": "Sharma Distributors",
+      "vendor_gstin": "07AAAAA0000A1Z4",
+      "invoice_number": "INV-2026-028",
+      "invoice_date": "2026-10-12",
+      "due_date": "2026-11-11",
+      "line_items": [
+        {
+          "description": "Aashirvaad Shudh Chakki Atta 10kg",
+          "description_normalized": "",
+          "hsn_code": "1101",
+          "pack_size": "10kg",
+          "unit": "kg",
+          "quantity": 5,
+          "unit_price": 380,
+          "taxable_value": 1900,
+          "gst_rate": 5
+        },
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 38,
+          "taxable_value": 380,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 2280,
+      "cgst": 81.7,
+      "sgst": 81.7,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2443.4,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 29,
+    "file_name": "bill_029_Bharat_Trading_Co.jpg",
+    "distributor": "Bharat Trading Co",
+    "expected_data": {
+      "vendor_name": "Bharat Trading Co",
+      "vendor_gstin": "07BBBCC1111B1ZM",
+      "invoice_number": "INV-2026-029",
+      "invoice_date": "2026-10-14",
+      "due_date": "2026-11-13",
+      "line_items": [
+        {
+          "description": "Dettol Original Soap 75g",
+          "description_normalized": "",
+          "hsn_code": "3401",
+          "pack_size": "75g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 38,
+          "taxable_value": 190,
+          "gst_rate": 18
+        },
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 10,
+          "unit_price": 14,
+          "taxable_value": 140,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 15,
+          "unit_price": 145,
+          "taxable_value": 2175,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 2505,
+      "cgst": 221.25,
+      "sgst": 221.25,
+      "igst": 0,
+      "round_off": 0,
+      "total": 2947.5,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  },
+  {
+    "bill_id": 30,
+    "file_name": "bill_030_Kailash_Agro_Foods.jpg",
+    "distributor": "Kailash Agro Foods",
+    "expected_data": {
+      "vendor_name": "Kailash Agro Foods",
+      "vendor_gstin": "07CCCDD2222C1Z7",
+      "invoice_number": "INV-2026-030",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-15",
+      "line_items": [
+        {
+          "description": "Maggi 2-Minute Noodles Masala 70g",
+          "description_normalized": "",
+          "hsn_code": "1902",
+          "pack_size": "70g",
+          "unit": "units",
+          "quantity": 5,
+          "unit_price": 14,
+          "taxable_value": 70,
+          "gst_rate": 12
+        },
+        {
+          "description": "Surf Excel Quick Wash 1kg",
+          "description_normalized": "",
+          "hsn_code": "3402",
+          "pack_size": "1kg",
+          "unit": "kg",
+          "quantity": 10,
+          "unit_price": 145,
+          "taxable_value": 1450,
+          "gst_rate": 18
+        },
+        {
+          "description": "Colgate Strong Teeth 200g",
+          "description_normalized": "",
+          "hsn_code": "3306",
+          "pack_size": "200g",
+          "unit": "units",
+          "quantity": 15,
+          "unit_price": 110,
+          "taxable_value": 1650,
+          "gst_rate": 18
+        },
+        {
+          "description": "Parle-G 12-pack Biscuit",
+          "description_normalized": "",
+          "hsn_code": "1905",
+          "pack_size": "12-pack",
+          "unit": "pack",
+          "quantity": 20,
+          "unit_price": 118,
+          "taxable_value": 2360,
+          "gst_rate": 18
+        }
+      ],
+      "subtotal": 5530,
+      "cgst": 495.6,
+      "sgst": 495.6,
+      "igst": 0,
+      "round_off": 0,
+      "total": 6521.2,
+      "language_detected": "English",
+      "confidence": 0.95
+    }
+  }
+]

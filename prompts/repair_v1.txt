@@ -1,0 +1,3 @@
+Your previous extraction failed this check: {validation_error}.
+Look at the image again, focusing only on: {affected_fields}.
+Return the full corrected JSON. If the value is still unreadable, return null for it rather than adjusting it to make the math work.

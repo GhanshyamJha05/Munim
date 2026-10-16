@@ -1,0 +1,34 @@
+# Binaries and executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/munim
+/munim.exe
+
+# Local Application Data & Databases (Contains user's store bills and actual invoice records)
+/data/
+data/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Test & Evaluation artifacts containing generated bill images
+/demo_data/bills/
+demo_data/bills/
+
+# Temporary and Scratch Files
+scratch/
+*.log
+*.tmp
+take_qr_screenshot.ps1
+qr_preview.html
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
