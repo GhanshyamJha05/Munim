@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	qrcode "github.com/skip2/go-qrcode"
@@ -113,6 +114,10 @@ func printTerminalQR(url string) {
 }
 
 func (s *Server) handleQRCode(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	lanIP := getLocalIP()
 	targetURL := fmt.Sprintf("http://localhost:%d", s.port)
 	if lanIP != "" && lanIP != "127.0.0.1" {
@@ -128,6 +133,10 @@ func (s *Server) handleQRCode(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleLANURL(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	lanIP := getLocalIP()
 	hasLAN := lanIP != "" && lanIP != "127.0.0.1"
 	url := fmt.Sprintf("http://localhost:%d", s.port)
@@ -143,9 +152,23 @@ func (s *Server) handleLANURL(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleServeBillImage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	cleanPath := filepath.Clean(r.URL.Path[len("/bills/"):])
 	fullPath := filepath.Join(s.uploadDir, cleanPath)
-	http.ServeFile(w, r, fullPath)
+	absUploadDir, err := filepath.Abs(s.uploadDir)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	absFullPath, err := filepath.Abs(fullPath)
+	if err != nil || (!strings.HasPrefix(absFullPath, absUploadDir+string(filepath.Separator)) && absFullPath != absUploadDir) {
+		http.Error(w, "Access denied", http.StatusForbidden)
+		return
+	}
+	http.ServeFile(w, r, absFullPath)
 }
 
 func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
@@ -225,6 +248,7 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"duplicate":          true,
 			"duplicate_message":  "This bill was already added (" + dupReason + ").",
+			"existing_bill":      dupBill,
 			"existing_bill_id":   dupBill.ID,
 			"existing_inv_num":   dupBill.InvoiceNumber,
 			"existing_bill_date": dupBill.InvoiceDate.Format("2006-01-02"),
@@ -289,6 +313,10 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleBills(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	bills, err := s.store.GetAllBills(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -299,6 +327,10 @@ func (s *Server) handleBills(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleAlerts(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	alerts, err := s.store.GetAllPriceAlerts(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -309,6 +341,10 @@ func (s *Server) handleAlerts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDues(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	dues, err := s.store.GetSupplierDues(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -412,19 +448,31 @@ func (s *Server) handleRecordPayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		BillID      int64   `json:"bill_id"`
-		Amount      float64 `json:"amount"`
-		PaymentDate string  `json:"payment_date"`
-		PaymentMode string  `json:"payment_mode"` // cash, UPI, bank
+		BillID       int64   `json:"bill_id"`
+		SupplierName string  `json:"supplier_name"`
+		Amount       float64 `json:"amount"`
+		PaymentDate  string  `json:"payment_date"`
+		PaymentMode  string  `json:"payment_mode"` // cash, UPI, bank
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	err := s.store.RecordPaymentWithDetails(r.Context(), req.BillID, req.Amount, req.PaymentDate, req.PaymentMode)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
+	if req.BillID > 0 {
+		err := s.store.RecordPaymentWithDetails(r.Context(), req.BillID, req.Amount, req.PaymentDate, req.PaymentMode)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	} else if req.SupplierName != "" {
+		err := s.store.RecordSupplierPayment(r.Context(), req.SupplierName, req.Amount, req.PaymentDate, req.PaymentMode)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	} else {
+		http.Error(w, "Missing bill_id or supplier_name", 400)
 		return
 	}
 
@@ -433,6 +481,10 @@ func (s *Server) handleRecordPayment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleExportCA(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	monthStr := r.URL.Query().Get("month") // YYYY-MM
 	var filterMonth time.Time
 	if monthStr != "" {
@@ -458,6 +510,10 @@ func (s *Server) handleExportCA(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleExportTally(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	monthStr := r.URL.Query().Get("month")
 	var filterMonth time.Time
 	if monthStr != "" {

@@ -80,6 +80,7 @@ const translations = {
     lblGstin: "Supplier GSTIN",
     lblInvNum: "Invoice Number",
     lblInvDate: "Invoice Date",
+    lblDueDate: "Due Date",
     itemsDetails: "Line Items",
     taxTotals: "Taxes & Totals",
     lblSubtotal: "Subtotal (₹)",
@@ -168,6 +169,7 @@ const translations = {
     lblGstin: "सप्लायर GSTIN",
     lblInvNum: "बिल संख्या",
     lblInvDate: "बिल तारीख",
+    lblDueDate: "अंतिम तारीख",
     itemsDetails: "सामान सूची",
     taxTotals: "टैक्स और कुल योग",
     lblSubtotal: "सब-टोटल (₹)",
@@ -289,6 +291,7 @@ function applyTranslations() {
   setTxt('lbl-gstin', t.lblGstin);
   setTxt('lbl-inv-num', t.lblInvNum);
   setTxt('lbl-inv-date', t.lblInvDate);
+  setTxt('lbl-due-date', t.lblDueDate);
   setTxt('t-items-details', t.itemsDetails);
   setTxt('t-tax-totals', t.taxTotals);
   setTxt('lbl-subtotal', t.lblSubtotal);
@@ -394,11 +397,22 @@ function uploadFile(file, confirmDuplicate = false) {
 
       if (data.duplicate) {
         const t = translations[currentLanguage];
-        const msg = `${data.duplicate_message || t.duplicateWarning}\n\nInvoice: ${data.existing_bill.invoice_number || 'N/A'}\nSupplier: ${data.existing_bill.vendor_name || 'N/A'}\nDate: ${data.existing_bill.invoice_date ? data.existing_bill.invoice_date.split('T')[0] : 'N/A'}\n\nClick OK to upload anyway, or Cancel to view the existing bill.`;
+        const existingBill = data.existing_bill || {
+          id: data.existing_bill_id,
+          invoice_number: data.existing_inv_num,
+          invoice_date: data.existing_bill_date,
+          vendor_name: (data.extraction && data.extraction.vendor_name) || 'N/A'
+        };
+        const invNum = existingBill.invoice_number || data.existing_inv_num || 'N/A';
+        const vendor = existingBill.vendor_name || 'N/A';
+        const invDate = existingBill.invoice_date ? existingBill.invoice_date.split('T')[0] : (data.existing_bill_date || 'N/A');
+        const billId = existingBill.id || data.existing_bill_id;
+
+        const msg = `${data.duplicate_message || t.duplicateWarning}\n\nInvoice: ${invNum}\nSupplier: ${vendor}\nDate: ${invDate}\n\nClick OK to upload anyway, or Cancel to view the existing bill.`;
         if (confirm(msg)) {
           uploadFile(file, true);
         } else {
-          viewBillDetails(data.existing_bill.id);
+          viewBillDetails(billId);
         }
         return;
       }
@@ -675,6 +689,7 @@ function openReviewModal(bill) {
   document.getElementById('edit-vendor-gstin').value = bill.vendor_gstin || '';
   document.getElementById('edit-invoice-number').value = bill.invoice_number || '';
   document.getElementById('edit-invoice-date').value = bill.invoice_date ? bill.invoice_date.split('T')[0] : '';
+  document.getElementById('edit-due-date').value = bill.due_date ? bill.due_date.split('T')[0] : '';
 
   // Fill Taxes & Totals
   document.getElementById('edit-subtotal').value = (bill.subtotal || 0).toFixed(2);
@@ -824,6 +839,7 @@ function saveReviewBill() {
     };
   });
 
+  const dueDateVal = document.getElementById('edit-due-date').value;
   const payload = {
     bill_id: activeReviewBill.id,
     status: 'approved',
@@ -831,6 +847,7 @@ function saveReviewBill() {
     vendor_gstin: document.getElementById('edit-vendor-gstin').value,
     invoice_number: document.getElementById('edit-invoice-number').value,
     invoice_date: document.getElementById('edit-invoice-date').value,
+    due_date: dueDateVal ? dueDateVal : null,
     subtotal: parseFloat(document.getElementById('edit-subtotal').value) || 0,
     cgst: parseFloat(document.getElementById('edit-cgst').value) || 0,
     sgst: parseFloat(document.getElementById('edit-sgst').value) || 0,
@@ -888,7 +905,8 @@ function savePayment() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      bill_id: activePayBill.id,
+      bill_id: activePayBill.id || 0,
+      supplier_name: activePayBill.supplier || '',
       amount: amount,
       payment_date: paymentDate,
       payment_mode: paymentMode

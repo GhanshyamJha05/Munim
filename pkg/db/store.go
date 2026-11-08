@@ -35,6 +35,8 @@ func Open(dbPath string) (*Store, error) {
 
 	// Optimize SQLite for concurrent single-binary local-first usage
 	db.SetMaxOpenConns(1)
+	_, _ = db.Exec("PRAGMA journal_mode=WAL;")
+	_, _ = db.Exec("PRAGMA synchronous=NORMAL;")
 
 	s := &Store{db: db}
 	if err := s.migrate(); err != nil {
@@ -252,6 +254,51 @@ func (s *Store) UpdateBillStatusAndItems(ctx context.Context, id int64, status m
 // RecordPayment updates amount paid and payment status for a bill.
 func (s *Store) RecordPayment(ctx context.Context, billID int64, amount float64) error {
 	return s.RecordPaymentWithDetails(ctx, billID, amount, "", "")
+}
+
+// RecordSupplierPayment distributes a lump-sum payment across unpaid bills for a given supplier (FIFO by invoice_date).
+func (s *Store) RecordSupplierPayment(ctx context.Context, supplier string, amount float64, paymentDate string, paymentMode string) error {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT id, total, amount_paid 
+		FROM bills 
+		WHERE vendor_name = ? AND payment_status != 'paid' 
+		ORDER BY invoice_date ASC, id ASC`, supplier)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	type billDue struct {
+		id         int64
+		total      float64
+		amountPaid float64
+	}
+	var unpaidBills []billDue
+	for rows.Next() {
+		var bd billDue
+		if err := rows.Scan(&bd.id, &bd.total, &bd.amountPaid); err != nil {
+			return err
+		}
+		unpaidBills = append(unpaidBills, bd)
+	}
+
+	remaining := amount
+	for _, bd := range unpaidBills {
+		if remaining <= 0.001 {
+			break
+		}
+		due := bd.total - bd.amountPaid
+		payForThisBill := remaining
+		if payForThisBill > due {
+			payForThisBill = due
+		}
+		if err := s.RecordPaymentWithDetails(ctx, bd.id, payForThisBill, paymentDate, paymentMode); err != nil {
+			return err
+		}
+		remaining -= payForThisBill
+	}
+
+	return nil
 }
 
 // RecordPaymentWithDetails records amount paid with payment date and mode (cash/UPI/bank).
