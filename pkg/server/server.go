@@ -192,6 +192,11 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	// Preprocess image
 	filename := fmt.Sprintf("bill_%d_%s", time.Now().UnixNano(), filepath.Base(header.Filename))
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	if ext == ".pdf" || header.Header.Get("Content-Type") == "application/pdf" {
+		http.Error(w, "PDF processing requires raster image conversion; please upload as JPG or PNG", http.StatusBadRequest)
+		return
+	}
 	procImg, err := preproc.ProcessBytes(file, filename, s.uploadDir)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Preprocessing failed: %v", err), http.StatusInternalServerError)
@@ -561,7 +566,22 @@ func (s *Server) handleSettings(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		oldModel := s.ollama.ModelName()
 		s.ollama.SetModel(req.Model)
+
+		// Validate model availability in Ollama
+		if err := s.ollama.CheckStatus(r.Context()); err != nil {
+			s.ollama.SetModel(oldModel) // rollback
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": false,
+				"error":   err.Error(),
+				"model":   oldModel,
+			})
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": true,

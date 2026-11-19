@@ -226,11 +226,18 @@ function setupSettings() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: sel.value })
     })
-    .then(r => r.json())
-    .then(data => {
+    .then(async r => {
+      const data = await r.json();
+      if (!r.ok || !data.success) {
+        alert(data.error || "Failed to switch model");
+        if (data.model) sel.value = data.model;
+        return;
+      }
       alert(`Active model switched to ${data.model}`);
     })
-    .catch(() => {});
+    .catch(err => {
+      alert("Error switching model: " + err.message);
+    });
   });
 }
 
@@ -375,6 +382,11 @@ function setupUpload() {
 }
 
 function uploadFile(file, confirmDuplicate = false) {
+  if (file && file.type === 'application/pdf') {
+    alert("Direct PDF upload is currently not supported. Please upload a clear photo or screenshot of the bill (JPG or PNG).");
+    return;
+  }
+
   const loading = document.getElementById('loading-overlay');
   loading.style.display = 'flex';
 
@@ -449,6 +461,10 @@ function setupModals() {
 
   document.getElementById('review-approve-btn').addEventListener('click', saveReviewBill);
   document.getElementById('confirm-pay-btn').addEventListener('click', savePayment);
+  const addItemBtn = document.getElementById('btn-add-item');
+  if (addItemBtn) {
+    addItemBtn.addEventListener('click', addReviewLineItem);
+  }
 }
 
 function toggleZoomImage() {
@@ -704,18 +720,7 @@ function openReviewModal(bill) {
   document.querySelectorAll('.form-group').forEach(el => el.classList.remove('field-error'));
 
   // Render Line Items Table (with HSN and GST rate editable per line)
-  const tbody = document.getElementById('review-items-tbody');
-  tbody.innerHTML = (bill.line_items || []).map((it, idx) => `
-    <tr>
-      <td><input type="text" value="${it.description}" id="item-desc-${idx}" class="form-input" style="width:100%; text-align:left;"></td>
-      <td><input type="text" value="${it.hsn_code || ''}" id="item-hsn-${idx}" class="form-input" style="width:70px;"></td>
-      <td><input type="text" value="${it.pack_size || ''}" id="item-pack-${idx}" class="form-input" style="width:75px;"></td>
-      <td><input type="number" step="0.1" value="${it.quantity}" id="item-qty-${idx}" class="form-input" style="width:65px;" oninput="recalculateLineItem(${idx})"></td>
-      <td><input type="number" step="0.01" value="${it.unit_price}" id="item-rate-${idx}" class="form-input" style="width:75px;" oninput="recalculateLineItem(${idx})"></td>
-      <td><input type="number" step="0.5" value="${it.gst_rate || 0}" id="item-gstrate-${idx}" class="form-input" style="width:60px;"></td>
-      <td><span id="item-taxable-${idx}" style="font-weight:600;">${formatCurrency(it.taxable_value || 0)}</span></td>
-    </tr>
-  `).join('');
+  renderReviewLineItems();
 
   // Plain-Language Error Highlighting & Banner
   const errorsDiv = document.getElementById('review-validation-errors');
@@ -781,6 +786,82 @@ function openReviewModal(bill) {
   }
 
   modal.style.display = 'flex';
+}
+
+function renderReviewLineItems() {
+  const tbody = document.getElementById('review-items-tbody');
+  tbody.innerHTML = (activeReviewBill.line_items || []).map((it, idx) => `
+    <tr>
+      <td><input type="text" value="${it.description || ''}" id="item-desc-${idx}" class="form-input" style="width:100%; text-align:left;"></td>
+      <td><input type="text" value="${it.hsn_code || ''}" id="item-hsn-${idx}" class="form-input" style="width:70px;"></td>
+      <td><input type="text" value="${it.pack_size || ''}" id="item-pack-${idx}" class="form-input" style="width:75px;"></td>
+      <td><input type="number" step="0.1" value="${it.quantity || 0}" id="item-qty-${idx}" class="form-input" style="width:65px;" oninput="recalculateLineItem(${idx})"></td>
+      <td><input type="number" step="0.01" value="${it.unit_price || 0}" id="item-rate-${idx}" class="form-input" style="width:75px;" oninput="recalculateLineItem(${idx})"></td>
+      <td><input type="number" step="0.5" value="${it.gst_rate || 0}" id="item-gstrate-${idx}" class="form-input" style="width:60px;"></td>
+      <td><span id="item-taxable-${idx}" style="font-weight:600;">${formatCurrency(it.taxable_value || 0)}</span></td>
+      <td style="text-align: center;"><button type="button" class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.75rem; color: #ef4444;" onclick="deleteReviewLineItem(${idx})">✕</button></td>
+    </tr>
+  `).join('');
+}
+
+function syncActiveReviewItemsFromInputs() {
+  if (!activeReviewBill) return;
+  const count = (activeReviewBill.line_items || []).length;
+  for (let i = 0; i < count; i++) {
+    const descEl = document.getElementById(`item-desc-${i}`);
+    if (!descEl) continue;
+    const qty = parseFloat(document.getElementById(`item-qty-${i}`).value) || 0;
+    const rate = parseFloat(document.getElementById(`item-rate-${i}`).value) || 0;
+    activeReviewBill.line_items[i].description = descEl.value;
+    activeReviewBill.line_items[i].hsn_code = document.getElementById(`item-hsn-${i}`).value;
+    activeReviewBill.line_items[i].pack_size = document.getElementById(`item-pack-${i}`).value;
+    activeReviewBill.line_items[i].quantity = qty;
+    activeReviewBill.line_items[i].unit_price = rate;
+    activeReviewBill.line_items[i].taxable_value = qty * rate;
+    activeReviewBill.line_items[i].gst_rate = parseFloat(document.getElementById(`item-gstrate-${i}`).value) || 0;
+  }
+}
+
+function addReviewLineItem() {
+  if (!activeReviewBill) return;
+  syncActiveReviewItemsFromInputs();
+  if (!activeReviewBill.line_items) activeReviewBill.line_items = [];
+  activeReviewBill.line_items.push({
+    description: "New Item",
+    hsn_code: "",
+    pack_size: "",
+    quantity: 1,
+    unit_price: 0,
+    taxable_value: 0,
+    gst_rate: 18,
+    unit: "pcs"
+  });
+  renderReviewLineItems();
+  recalculateSubtotalFromInputs();
+}
+
+function deleteReviewLineItem(idx) {
+  if (!activeReviewBill || !activeReviewBill.line_items) return;
+  syncActiveReviewItemsFromInputs();
+  activeReviewBill.line_items.splice(idx, 1);
+  renderReviewLineItems();
+  recalculateSubtotalFromInputs();
+}
+
+function recalculateSubtotalFromInputs() {
+  let sum = 0;
+  const count = (activeReviewBill.line_items || []).length;
+  for (let i = 0; i < count; i++) {
+    const qEl = document.getElementById(`item-qty-${i}`);
+    const rEl = document.getElementById(`item-rate-${i}`);
+    if (qEl && rEl) {
+      const q = parseFloat(qEl.value) || 0;
+      const r = parseFloat(rEl.value) || 0;
+      sum += q * r;
+    }
+  }
+  document.getElementById('edit-subtotal').value = sum.toFixed(2);
+  recalculateGrandTotal();
 }
 
 function recalculateLineItem(idx) {

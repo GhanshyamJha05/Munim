@@ -47,7 +47,21 @@ func GenerateCAPack(bills []models.BillRecord, filterMonth time.Time) ([]byte, e
 			}
 		}
 
-		for _, item := range b.LineItems {
+		for i, item := range b.LineItems {
+			// Print bill-level taxes and totals only on the first line item to prevent CA sum multiplication
+			cgstStr := ""
+			sgstStr := ""
+			igstStr := ""
+			roundOffStr := ""
+			totalStr := ""
+			if i == 0 {
+				cgstStr = fmt.Sprintf("%.2f", b.CGST)
+				sgstStr = fmt.Sprintf("%.2f", b.SGST)
+				igstStr = fmt.Sprintf("%.2f", b.IGST)
+				roundOffStr = fmt.Sprintf("%.2f", b.RoundOff)
+				totalStr = fmt.Sprintf("%.2f", b.Total)
+			}
+
 			row := []string{
 				b.InvoiceNumber,
 				b.InvoiceDate.Format("2006-01-02"),
@@ -61,11 +75,11 @@ func GenerateCAPack(bills []models.BillRecord, filterMonth time.Time) ([]byte, e
 				fmt.Sprintf("%.2f", item.UnitPrice),
 				fmt.Sprintf("%.2f", item.TaxableValue),
 				fmt.Sprintf("%.1f", item.GSTRate),
-				fmt.Sprintf("%.2f", b.CGST),
-				fmt.Sprintf("%.2f", b.SGST),
-				fmt.Sprintf("%.2f", b.IGST),
-				fmt.Sprintf("%.2f", b.RoundOff),
-				fmt.Sprintf("%.2f", b.Total),
+				cgstStr,
+				sgstStr,
+				igstStr,
+				roundOffStr,
+				totalStr,
 				string(b.ValidationStatus),
 				b.PaymentStatus,
 			}
@@ -136,10 +150,22 @@ func GenerateTallyVouchers(bills []models.BillRecord, filterMonth time.Time) ([]
 			continue
 		}
 
-		for _, item := range b.LineItems {
+		for i, item := range b.LineItems {
 			taxName := "Local Purchase GST"
 			if b.IGST > 0 {
 				taxName = "Interstate Purchase IGST"
+			}
+
+			// In multi-item vouchers, invoice taxes and grand total belong on the primary voucher entry to avoid inflation
+			cgstStr := ""
+			sgstStr := ""
+			igstStr := ""
+			totalStr := ""
+			if i == 0 {
+				cgstStr = fmt.Sprintf("%.2f", b.CGST)
+				sgstStr = fmt.Sprintf("%.2f", b.SGST)
+				igstStr = fmt.Sprintf("%.2f", b.IGST)
+				totalStr = fmt.Sprintf("%.2f", b.Total)
 			}
 
 			row := []string{
@@ -152,10 +178,10 @@ func GenerateTallyVouchers(bills []models.BillRecord, filterMonth time.Time) ([]
 				fmt.Sprintf("%.2f", item.Quantity),
 				fmt.Sprintf("%.2f", item.UnitPrice),
 				fmt.Sprintf("%.2f", item.TaxableValue),
-				fmt.Sprintf("%.2f", b.CGST),
-				fmt.Sprintf("%.2f", b.SGST),
-				fmt.Sprintf("%.2f", b.IGST),
-				fmt.Sprintf("%.2f", b.Total),
+				cgstStr,
+				sgstStr,
+				igstStr,
+				totalStr,
 				narration,
 			}
 			_ = w.Write(row)

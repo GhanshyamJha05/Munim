@@ -56,7 +56,7 @@
 
     <!-- Upload Card -->
     <div class="upload-card" id="drop-zone">
-      <input type="file" id="file-input" accept="image/*,application/pdf" capture="environment" style="display: none;">
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/jpg" capture="environment" style="display: none;">
       <div class="upload-icon">📸</div>
       <div class="upload-text" id="t-upload-title">Photograph or Upload Bill</div>
       <div class="upload-hint" id="t-upload-sub">Take a photo from your phone or drop a supplier bill here. Local vision AI extracts items in seconds.</div>
@@ -198,7 +198,10 @@
           </div>
 
           <!-- Line Items Table -->
-          <div class="fields-section-title" style="margin-top: 14px;" id="t-items-details">Line Items</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; margin-bottom: 6px;">
+            <div class="fields-section-title" style="margin-top: 0; margin-bottom: 0;" id="t-items-details">Line Items</div>
+            <button type="button" class="btn btn-secondary" id="btn-add-item" style="padding: 3px 8px; font-size: 0.78rem;">+ Add Item</button>
+          </div>
           <div style="overflow-x: auto; max-height: 220px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px;">
             <table class="items-table" style="margin-bottom: 0;">
               <thead>
@@ -210,6 +213,7 @@
                   <th style="width: 80px;">Rate (₹)</th>
                   <th style="width: 70px;">GST %</th>
                   <th style="width: 90px;">Taxable (₹)</th>
+                  <th style="width: 40px;"></th>
                 </tr>
               </thead>
               <tbody id="review-items-tbody"></tbody>
