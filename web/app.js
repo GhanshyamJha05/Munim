@@ -6,6 +6,7 @@ let cachedBills = [];
 let cachedAlerts = [];
 let cachedDues = [];
 let selectedSpendMonth = ""; // Format: YYYY-MM
+let isLiveDemoMode = false;
 
 // Shared currency formatter using Indian digit grouping (en-IN)
 function formatCurrency(val) {
@@ -401,6 +402,89 @@ function uploadFile(file, confirmDuplicate = false) {
   const loading = document.getElementById('loading-overlay');
   loading.style.display = 'flex';
 
+  // Handle Interactive Live Demo Mode when hosted statically on Vercel without Go backend
+  if (isLiveDemoMode) {
+    setTimeout(() => {
+      loading.style.display = 'none';
+
+      // Parse or simulate new extracted bill
+      const newBillId = (cachedBills.length > 0 ? Math.max(...cachedBills.map(b => b.id || 0)) : 0) + 1;
+      const demoLineItems = [
+        { description: "Fortune Sunlite Refined Sunflower Oil 1L", hsn_code: "1512", pack_size: "1L", unit: "pack", quantity: 15, unit_price: 135.0, taxable_value: 2025.0, gst_rate: 5 },
+        { description: "Aashirvaad Superior MP Sharbati Atta 10kg", hsn_code: "1101", pack_size: "10kg", unit: "bag", quantity: 8, unit_price: 460.0, taxable_value: 3680.0, gst_rate: 5 },
+        { description: "Tata Salt Vacuum Evaporated 1kg", hsn_code: "2501", pack_size: "1kg", unit: "kg", quantity: 20, unit_price: 25.0, taxable_value: 500.0, gst_rate: 5 }
+      ];
+      const subtotal = 6205.0;
+      const cgst = 155.13;
+      const sgst = 155.13;
+      const total = 6515.26;
+      const today = new Date().toISOString().split('T')[0];
+
+      const newBill = {
+        id: newBillId,
+        image_path: '/sample_bill.jpg',
+        file_hash: 'demo_upload_' + Date.now(),
+        vendor_name: "Sharma Distributors",
+        vendor_gstin: "07AAAAA0000A1Z4",
+        invoice_number: "INV-DEMO-" + String(newBillId).padStart(3, '0'),
+        invoice_date: today,
+        due_date: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+        line_items_json: JSON.stringify(demoLineItems),
+        subtotal: subtotal,
+        cgst: cgst,
+        sgst: sgst,
+        igst: 0,
+        round_off: 0,
+        total: total,
+        amount_paid: 0,
+        payment_status: 'unpaid',
+        confidence: 0.96,
+        validation_status: 'verified',
+        validation_errors: '[]',
+        created_at: new Date().toISOString()
+      };
+
+      cachedBills.unshift(newBill);
+
+      // Add a demo alert
+      const newAlert = {
+        id: (cachedAlerts.length > 0 ? Math.max(...cachedAlerts.map(a => a.id || 0)) : 0) + 1,
+        bill_id: newBillId,
+        item_description: "Fortune Sunlite Refined Sunflower Oil 1L",
+        prior_price: 128.0,
+        current_price: 135.0,
+        percentage_change: 5.47,
+        status: 'active',
+        message: "Fortune Sunlite Refined Sunflower Oil 1L price increased by 5.5% (₹128.00 -> ₹135.00)",
+        created_at: new Date().toISOString()
+      };
+      cachedAlerts.unshift(newAlert);
+
+      // Update dues map
+      let vendorDue = cachedDues.find(d => d.vendor_name === newBill.vendor_name);
+      if (vendorDue) {
+        vendorDue.total_outstanding += total;
+        vendorDue.pending_bills_count += 1;
+      } else {
+        cachedDues.push({
+          vendor_name: newBill.vendor_name,
+          total_outstanding: total,
+          oldest_due_date: newBill.due_date,
+          pending_bills_count: 1
+        });
+      }
+
+      // Persist in localStorage for user session
+      localStorage.setItem('munim_demo_bills', JSON.stringify(cachedBills));
+      localStorage.setItem('munim_demo_alerts', JSON.stringify(cachedAlerts));
+      localStorage.setItem('munim_demo_dues', JSON.stringify(cachedDues));
+
+      initDashboardView();
+      alert("🎉 [Demo Mode] Bill successfully extracted!\n\nVendor: Sharma Distributors\nTotal: ₹6,515.26\nAlert: 1 new price increase detected.");
+    }, 1200);
+    return;
+  }
+
   const formData = new FormData();
   formData.append('bill', file);
   if (confirmDuplicate) {
@@ -505,52 +589,84 @@ function toggleZoomImage() {
 
 function loadDashboard() {
   Promise.all([
-    fetch('/api/bills').then(r => r.json()),
-    fetch('/api/alerts').then(r => r.json()),
-    fetch('/api/dues').then(r => r.json())
+    fetch('/api/bills').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    fetch('/api/alerts').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    fetch('/api/dues').then(r => { if (!r.ok) throw new Error(); return r.json(); })
   ]).then(([bills, alerts, dues]) => {
+    isLiveDemoMode = false;
+    const badge = document.getElementById('demo-badge');
+    if (badge) badge.style.display = 'none';
     cachedBills = bills || [];
     cachedAlerts = alerts || [];
     cachedDues = dues || [];
-
-    // Populate ledger month filter options dynamically
-    const ledgerFilter = document.getElementById('ledger-month-filter');
-    if (ledgerFilter) {
-      const currentSelected = ledgerFilter.value;
-      const monthsSet = new Set();
-      cachedBills.forEach(b => {
-        if (b.invoice_date) {
-          monthsSet.add(b.invoice_date.split('T')[0].substring(0, 7));
-        }
-      });
-      const sortedMonths = Array.from(monthsSet).sort().reverse();
-      const t = translations[currentLanguage];
-      ledgerFilter.innerHTML = `<option value="ALL">${t.allInvoices}</option>` +
-        sortedMonths.map(m => `<option value="${m}">${m}</option>`).join('');
-      if (currentSelected && (currentSelected === "ALL" || sortedMonths.includes(currentSelected))) {
-        ledgerFilter.value = currentSelected;
-      }
+    initDashboardView();
+  }).catch(() => {
+    // Backend not running (e.g. hosted on Vercel) -> Load Interactive Live Demo Mode
+    isLiveDemoMode = true;
+    const badge = document.getElementById('demo-badge');
+    if (badge) badge.style.display = 'inline-block';
+    
+    // Check localStorage for demo modifications first
+    const savedBills = localStorage.getItem('munim_demo_bills');
+    const savedAlerts = localStorage.getItem('munim_demo_alerts');
+    const savedDues = localStorage.getItem('munim_demo_dues');
+    if (savedBills && savedAlerts && savedDues) {
+      cachedBills = JSON.parse(savedBills);
+      cachedAlerts = JSON.parse(savedAlerts);
+      cachedDues = JSON.parse(savedDues);
+      initDashboardView();
+    } else {
+      fetch('/demo_data.json')
+        .then(r => r.json())
+        .then(demoData => {
+          cachedBills = demoData.bills || [];
+          cachedAlerts = demoData.alerts || [];
+          cachedDues = demoData.dues || [];
+          initDashboardView();
+        })
+        .catch(err => console.error("Could not load demo data:", err));
     }
+  });
+}
 
-    // Auto-align spend month picker with the latest bill's month if bills exist
-    if (cachedBills.length > 0) {
-      const latestDateStr = cachedBills[0].invoice_date.split('T')[0];
-      const latestMonth = latestDateStr.substring(0, 7);
-      const spendPicker = document.getElementById('spend-month-picker');
-      const exportPicker = document.getElementById('export-month');
-      if (spendPicker && !spendPicker.dataset.userChanged) {
-        selectedSpendMonth = latestMonth;
-        spendPicker.value = latestMonth;
+function initDashboardView() {
+  // Populate ledger month filter options dynamically
+  const ledgerFilter = document.getElementById('ledger-month-filter');
+  if (ledgerFilter) {
+    const currentSelected = ledgerFilter.value;
+    const monthsSet = new Set();
+    cachedBills.forEach(b => {
+      if (b.invoice_date) {
+        monthsSet.add(b.invoice_date.split('T')[0].substring(0, 7));
       }
-      if (exportPicker) {
-        exportPicker.value = selectedSpendMonth;
-        document.getElementById('ca-pack-btn').href = `/api/export/ca?month=${selectedSpendMonth}`;
-        document.getElementById('tally-btn').href = `/api/export/tally?month=${selectedSpendMonth}`;
-      }
+    });
+    const sortedMonths = Array.from(monthsSet).sort().reverse();
+    const t = translations[currentLanguage];
+    ledgerFilter.innerHTML = `<option value="ALL">${t.allInvoices}</option>` +
+      sortedMonths.map(m => `<option value="${m}">${m}</option>`).join('');
+    if (currentSelected && (currentSelected === "ALL" || sortedMonths.includes(currentSelected))) {
+      ledgerFilter.value = currentSelected;
     }
+  }
 
-    renderAll();
-  }).catch(() => {});
+  // Auto-align spend month picker with the latest bill's month if bills exist
+  if (cachedBills.length > 0) {
+    const latestDateStr = cachedBills[0].invoice_date.split('T')[0];
+    const latestMonth = latestDateStr.substring(0, 7);
+    const spendPicker = document.getElementById('spend-month-picker');
+    const exportPicker = document.getElementById('export-month');
+    if (spendPicker && !spendPicker.dataset.userChanged) {
+      selectedSpendMonth = latestMonth;
+      spendPicker.value = latestMonth;
+    }
+    if (exportPicker) {
+      exportPicker.value = selectedSpendMonth;
+      document.getElementById('ca-pack-btn').href = `/api/export/ca?month=${selectedSpendMonth}`;
+      document.getElementById('tally-btn').href = `/api/export/tally?month=${selectedSpendMonth}`;
+    }
+  }
+
+  renderAll();
 }
 
 function renderAll() {
