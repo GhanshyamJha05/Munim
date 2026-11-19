@@ -409,7 +409,16 @@ function uploadFile(file, confirmDuplicate = false) {
 
   fetch('/api/upload', { method: 'POST', body: formData })
     .then(async res => {
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        if (!res.ok) {
+          throw new Error(text || `Server returned error status ${res.status}`);
+        }
+        throw new Error("Invalid response from server: " + text.substring(0, 100));
+      }
       if (!res.ok) {
         throw new Error(data.error || "Upload processing error");
       }
