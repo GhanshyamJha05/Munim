@@ -833,22 +833,48 @@ function renderBills(bills) {
 }
 
 function viewBillDetails(billId) {
+  // First check if already present in cachedBills (works offline & in demo mode)
+  const existing = cachedBills.find(x => x.id === billId);
+  if (existing) {
+    openReviewModal(existing);
+    return;
+  }
+
   fetch('/api/bills')
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) throw new Error();
+      return r.json();
+    })
     .then(bills => {
       const b = bills.find(x => x.id === billId);
       if (b) openReviewModal(b);
-    });
+    })
+    .catch(() => {});
 }
 
 // Requirement 5: Review modal showing and allowing editing of supplier, GSTIN, invoice number, date, subtotal, each tax, round-off, total, HSN, and GST rate per line. Highlight failing fields with plain language in English & Hindi.
 function openReviewModal(bill) {
   activeReviewBill = bill;
+  if (!activeReviewBill.line_items && activeReviewBill.line_items_json) {
+    try {
+      activeReviewBill.line_items = JSON.parse(activeReviewBill.line_items_json);
+    } catch (e) {
+      activeReviewBill.line_items = [];
+    }
+  }
+
   const t = translations[currentLanguage];
   const modal = document.getElementById('review-modal');
 
-  // Set bill image
-  document.getElementById('review-bill-img').src = `/bills/${bill.image_path}`;
+  // Set bill image (handle absolute, relative or sample)
+  const imgSrc = (bill.image_path && bill.image_path.startsWith('/')) 
+    ? bill.image_path 
+    : `/bills/${bill.image_path || 'sample_bill.jpg'}`;
+  const imgEl = document.getElementById('review-bill-img');
+  if (imgEl) {
+    imgEl.src = imgSrc;
+    imgEl.onerror = () => { imgEl.src = '/sample_bill.jpg'; };
+  }
   document.getElementById('zoom-container').classList.remove('zoomed');
 
   // Fill Header Inputs
@@ -1089,6 +1115,24 @@ function saveReviewBill() {
     line_items: items
   };
 
+  if (isLiveDemoMode) {
+    // Update locally in demo mode
+    const idx = cachedBills.findIndex(b => b.id === activeReviewBill.id);
+    if (idx !== -1) {
+      cachedBills[idx] = {
+        ...cachedBills[idx],
+        ...payload,
+        validation_status: 'approved',
+        validation_errors: []
+      };
+      localStorage.setItem('munim_demo_bills', JSON.stringify(cachedBills));
+    }
+    document.getElementById('review-modal').style.display = 'none';
+    initDashboardView();
+    alert("✅ Bill updated and approved successfully in Demo Mode!");
+    return;
+  }
+
   fetch('/api/bills/review', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1126,6 +1170,52 @@ function savePayment() {
 
   if (!amount || amount <= 0) {
     alert("Please enter a valid payment amount");
+    return;
+  }
+
+  if (isLiveDemoMode) {
+    // Record payment locally in demo mode
+    const supName = activePayBill.supplier || '';
+    const bId = activePayBill.id || 0;
+
+    if (bId > 0) {
+      const b = cachedBills.find(x => x.id === bId);
+      if (b) {
+        b.amount_paid = (b.amount_paid || 0) + amount;
+        b.payment_status = b.amount_paid >= b.total ? 'paid' : 'partially_paid';
+      }
+    } else {
+      // FIFO distribution across unpaid bills of this supplier
+      let remaining = amount;
+      cachedBills
+        .filter(b => b.vendor_name === supName && b.payment_status !== 'paid')
+        .forEach(b => {
+          if (remaining <= 0) return;
+          const due = b.total - (b.amount_paid || 0);
+          const pay = Math.min(due, remaining);
+          b.amount_paid = (b.amount_paid || 0) + pay;
+          remaining -= pay;
+          b.payment_status = b.amount_paid >= b.total ? 'paid' : 'partially_paid';
+        });
+    }
+
+    // Update dues
+    const d = cachedDues.find(x => x.supplier_name === supName);
+    if (d) {
+      d.total_paid += amount;
+      d.balance_due = Math.max(0, d.balance_due - amount);
+      if (d.balance_due <= 0.01) {
+        d.is_overdue = false;
+        d.overdue_bills = 0;
+        d.overdue_days = 0;
+      }
+    }
+
+    localStorage.setItem('munim_demo_bills', JSON.stringify(cachedBills));
+    localStorage.setItem('munim_demo_dues', JSON.stringify(cachedDues));
+    document.getElementById('pay-modal').style.display = 'none';
+    initDashboardView();
+    alert(`🎉 Payment of ${formatCurrency(amount)} recorded for ${supName}!`);
     return;
   }
 
