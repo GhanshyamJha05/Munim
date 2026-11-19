@@ -455,17 +455,28 @@ function setupModals() {
   document.getElementById('qr-btn').addEventListener('click', () => {
     const modal = document.getElementById('qr-modal');
     const urlEl = document.getElementById('qr-lan-url');
+    const qrImg = document.getElementById('qr-img');
+    const fallbackURL = `${window.location.protocol}//${window.location.host}`;
+
     fetch('/api/lan-url')
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error("API unavailable");
+        return r.json();
+      })
       .then(data => {
-        if (data.lan_url) {
-          urlEl.textContent = data.lan_url;
-        } else {
-          urlEl.textContent = "No active LAN IPv4 detected. Please connect to Wi-Fi/LAN.";
+        const targetUrl = data.url || data.lan_url || fallbackURL;
+        urlEl.textContent = targetUrl;
+        if (qrImg) {
+          qrImg.src = `/api/qr?t=${Date.now()}`;
         }
       })
       .catch(() => {
-        urlEl.textContent = `http://${window.location.host}`;
+        // Fallback when running without Go backend (e.g., static Vercel preview)
+        urlEl.textContent = fallbackURL;
+        if (qrImg) {
+          // Render QR code via public QR image service as client-side fallback
+          qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(fallbackURL)}`;
+        }
       });
     modal.style.display = 'flex';
   });
