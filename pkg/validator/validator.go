@@ -104,14 +104,16 @@ func ValidateInvoice(inv *models.InvoiceExtraction) *ValidationResult {
 		ConfidencePass: true,
 	}
 
-	// 1. GSTIN Check
-	if ok, errMsg := ValidateGSTIN(inv.VendorGSTIN); !ok {
-		res.Errors = append(res.Errors, errMsg)
-		res.PlainErrors = append(res.PlainErrors, PlainError{
-			Field:   "vendor_gstin",
-			English: fmt.Sprintf("Supplier GSTIN (%s) is invalid or checksum digit does not match.", inv.VendorGSTIN),
-			Hindi:   fmt.Sprintf("सप्लायर का GSTIN (%s) अमान्य है या चेक-डिजिट मेल नहीं खा रहा है।", inv.VendorGSTIN),
-		})
+	// 1. GSTIN Check (Optional: un-registered small kirana suppliers may not have a GSTIN)
+	if strings.TrimSpace(inv.VendorGSTIN) != "" {
+		if ok, errMsg := ValidateGSTIN(inv.VendorGSTIN); !ok {
+			res.Errors = append(res.Errors, errMsg)
+			res.PlainErrors = append(res.PlainErrors, PlainError{
+				Field:   "vendor_gstin",
+				English: fmt.Sprintf("Supplier GSTIN (%s) is invalid or checksum digit does not match.", inv.VendorGSTIN),
+				Hindi:   fmt.Sprintf("सप्लायर का GSTIN (%s) अमान्य है या चेक-डिजिट मेल नहीं खा रहा है।", inv.VendorGSTIN),
+			})
+		}
 	}
 
 	// 2. Line Items vs Subtotal

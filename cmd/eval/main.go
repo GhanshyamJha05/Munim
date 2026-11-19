@@ -261,8 +261,11 @@ func evaluateModel(ctx context.Context, client *ollama.Client, demoDir string, t
 	}
 
 	totalExpectedAlerts := 6.0 // 5 hikes + 1 cheaper-elsewhere
-	recall := float64(trueAlertsFound) / totalExpectedAlerts
-	precision := 1.0
+	recall := 0.0
+	if totalExpectedAlerts > 0 {
+		recall = float64(trueAlertsFound) / totalExpectedAlerts
+	}
+	precision := 0.0
 	if (trueAlertsFound + falseAlerts) > 0 {
 		precision = float64(trueAlertsFound) / float64(trueAlertsFound+falseAlerts)
 	}

@@ -7,33 +7,14 @@ import (
 	"github.com/munim-app/munim/pkg/models"
 )
 
-// Helper to compute correct GSTIN checksum for testing
-func computeGSTINChecksum(first14 string) string {
-	first14 = strings.ToUpper(first14)
-	var sum int
-	for i := 0; i < 14; i++ {
-		ch := first14[i]
-		idx := strings.IndexByte(gstinChars, ch)
-		factor := 1
-		if i%2 == 1 {
-			factor = 2
-		}
-		digit := idx * factor
-		digit = (digit / 36) + (digit % 36)
-		sum += digit
-	}
-	checkCode := (36 - (sum % 36)) % 36
-	return string(gstinChars[checkCode])
-}
-
 func TestGSTINValidator(t *testing.T) {
 	// Let's generate a couple of valid GSTINs
 	base1 := "07AAAAA0000A1Z"
-	c1 := computeGSTINChecksum(base1)
+	c1 := ComputeGSTINChecksum(base1)
 	validGSTIN1 := base1 + c1
 
 	base2 := "27ABCDE1234F2Z"
-	c2 := computeGSTINChecksum(base2)
+	c2 := ComputeGSTINChecksum(base2)
 	validGSTIN2 := base2 + c2
 
 	tests := []struct {
@@ -62,7 +43,7 @@ func TestGSTINValidator(t *testing.T) {
 
 func TestValidateInvoice(t *testing.T) {
 	baseGSTIN := "07AAAAA0000A1Z"
-	validGSTIN := baseGSTIN + computeGSTINChecksum(baseGSTIN)
+	validGSTIN := baseGSTIN + ComputeGSTINChecksum(baseGSTIN)
 
 	tests := []struct {
 		name        string

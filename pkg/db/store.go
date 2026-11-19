@@ -256,9 +256,15 @@ func (s *Store) RecordPayment(ctx context.Context, billID int64, amount float64)
 	return s.RecordPaymentWithDetails(ctx, billID, amount, "", "")
 }
 
-// RecordSupplierPayment distributes a lump-sum payment across unpaid bills for a given supplier (FIFO by invoice_date).
+// RecordSupplierPayment distributes a lump-sum payment across unpaid bills for a given supplier in a single transaction (FIFO by invoice_date).
 func (s *Store) RecordSupplierPayment(ctx context.Context, supplier string, amount float64, paymentDate string, paymentMode string) error {
-	rows, err := s.db.QueryContext(ctx, `
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(ctx, `
 		SELECT id, total, amount_paid 
 		FROM bills 
 		WHERE vendor_name = ? AND payment_status != 'paid' 
@@ -281,6 +287,7 @@ func (s *Store) RecordSupplierPayment(ctx context.Context, supplier string, amou
 		}
 		unpaidBills = append(unpaidBills, bd)
 	}
+	rows.Close()
 
 	remaining := amount
 	for _, bd := range unpaidBills {
@@ -292,13 +299,23 @@ func (s *Store) RecordSupplierPayment(ctx context.Context, supplier string, amou
 		if payForThisBill > due {
 			payForThisBill = due
 		}
-		if err := s.RecordPaymentWithDetails(ctx, bd.id, payForThisBill, paymentDate, paymentMode); err != nil {
+
+		newPaid := bd.amountPaid + payForThisBill
+		status := "partially_paid"
+		if newPaid >= bd.total-0.01 {
+			status = "paid"
+			newPaid = bd.total
+		}
+
+		_, err = tx.ExecContext(ctx, `UPDATE bills SET amount_paid = ?, payment_status = ? WHERE id = ?`, newPaid, status, bd.id)
+		if err != nil {
 			return err
 		}
+
 		remaining -= payForThisBill
 	}
 
-	return nil
+	return tx.Commit()
 }
 
 // RecordPaymentWithDetails records amount paid with payment date and mode (cash/UPI/bank).

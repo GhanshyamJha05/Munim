@@ -164,8 +164,13 @@ func (s *Server) handleServeBillImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	absFullPath, err := filepath.Abs(fullPath)
-	if err != nil || (!strings.HasPrefix(absFullPath, absUploadDir+string(filepath.Separator)) && absFullPath != absUploadDir) {
+	if err != nil || !strings.HasPrefix(absFullPath, absUploadDir+string(filepath.Separator)) {
 		http.Error(w, "Access denied", http.StatusForbidden)
+		return
+	}
+	fi, err := os.Stat(absFullPath)
+	if err != nil || fi.IsDir() {
+		http.Error(w, "File not found", http.StatusNotFound)
 		return
 	}
 	http.ServeFile(w, r, absFullPath)
@@ -208,9 +213,9 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 	// Extract via Gemma (supporting vertical tiling if tall image)
 	extraction, err := s.ollama.ExtractBill(ctx, procImg.Base64Data, procImg.Tiles)
 	if err != nil {
-		// Log structured error without sensitive info
+		// Log structured error without leaking internals to client
 		log.Printf("Ollama extraction failed: %v", err)
-		http.Error(w, fmt.Sprintf("AI extraction failed: %v", err), http.StatusInternalServerError)
+		http.Error(w, "AI extraction failed: unable to process bill image. Please ensure Ollama is running and try again.", http.StatusInternalServerError)
 		return
 	}
 
@@ -288,6 +293,16 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	billID, err := s.store.InsertBill(ctx, billRecord)
 	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "unique constraint") {
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
+				"duplicate":         true,
+				"duplicate_message": fmt.Sprintf("A bill with invoice #%s from %s for date %s already exists.", extraction.InvoiceNumber, extraction.VendorName, invDate.Format("2006-01-02")),
+				"existing_inv_num":  extraction.InvoiceNumber,
+				"extraction":        extraction,
+			})
+			return
+		}
 		http.Error(w, fmt.Sprintf("Failed to store bill: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -401,7 +416,7 @@ func (s *Server) handleReviewBill(w http.ResponseWriter, r *http.Request) {
 		RoundOff:      req.RoundOff,
 		Total:         req.Total,
 		LineItems:     req.LineItems,
-		Confidence:    0.95, // manually reviewed
+		Confidence:    1.0, // verified by human user
 	}
 	valRes := validator.ValidateInvoice(invExtraction)
 

@@ -18,6 +18,17 @@ function formatCurrency(val) {
   }).format(val);
 }
 
+// HTML escape helper to prevent XSS from OCR data
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Complete Bilingual Dictionary for Every UI String
 const translations = {
   en: {
@@ -537,13 +548,11 @@ function calculateMetrics(bills) {
   let reviewCount = 0;
 
   bills.forEach(b => {
-    if (b.validation_status !== 'rejected') {
-      const invDateStr = b.invoice_date.split('T')[0];
-      const invMonth = invDateStr.substring(0, 7);
-      if (selectedSpendMonth === "" || invMonth === selectedSpendMonth) {
-        monthlySpend += b.total;
-        monthBillsCount++;
-      }
+    const invDateStr = b.invoice_date.split('T')[0];
+    const invMonth = invDateStr.substring(0, 7);
+    if (selectedSpendMonth === "" || invMonth === selectedSpendMonth) {
+      monthlySpend += b.total;
+      monthBillsCount++;
     }
     if (b.validation_status === 'needs_review') {
       reviewCount++;
@@ -575,16 +584,18 @@ function renderAlerts(alerts) {
     const icon = isCheaper ? '💡' : '⚠️';
     
     const currInv = a.current_invoice_number || `Bill #${a.current_bill_id}`;
-    const currLink = a.current_image_path ? `/bills/${a.current_image_path}` : '#';
+    const currLink = a.current_image_path ? `/bills/${encodeURIComponent(a.current_image_path)}` : '#';
     const refInv = a.reference_invoice_number || `Bill #${a.reference_bill_id}`;
-    const refLink = a.reference_image_path ? `/bills/${a.reference_image_path}` : '#';
+    const refLink = a.reference_image_path ? `/bills/${encodeURIComponent(a.reference_image_path)}` : '#';
+    const curDate = a.current_bill_date ? a.current_bill_date.split('T')[0] : '';
+    const refDate = a.reference_bill_date ? a.reference_bill_date.split('T')[0] : '';
 
     return `
       <div class="alert-item ${tagClass}">
         <div>
-          <div class="alert-desc">${icon} ${a.message}</div>
+          <div class="alert-desc">${icon} ${escapeHTML(a.message)}</div>
           <div class="evidence-badge">
-            ${t.evidenceLabel}: <a href="${currLink}" target="_blank" style="color:var(--accent-gold); text-decoration:underline;">${currInv}</a> (${a.current_bill_date.split('T')[0]}) vs <a href="${refLink}" target="_blank" style="color:var(--accent-gold); text-decoration:underline;">${refInv}</a> (${a.reference_bill_date.split('T')[0]})
+            ${escapeHTML(t.evidenceLabel)}: <a href="${currLink}" target="_blank" style="color:var(--accent-gold); text-decoration:underline;">${escapeHTML(currInv)}</a> (${escapeHTML(curDate)}) vs <a href="${refLink}" target="_blank" style="color:var(--accent-gold); text-decoration:underline;">${escapeHTML(refInv)}</a> (${escapeHTML(refDate)})
           </div>
         </div>
       </div>
@@ -618,14 +629,14 @@ function renderDues(dues) {
 
     return `
       <tr>
-        <td style="font-weight:600;">${d.supplier_name}</td>
+        <td style="font-weight:600;">${escapeHTML(d.supplier_name)}</td>
         <td>${formatCurrency(d.total_billed)}</td>
         <td>${formatCurrency(d.total_paid)}</td>
         <td style="color:${d.balance_due > 0 ? 'var(--accent-gold)' : 'var(--accent-green)'}; font-weight:700;">${formatCurrency(d.balance_due)}</td>
-        <td>${dueDateStr}</td>
+        <td>${escapeHTML(dueDateStr)}</td>
         <td>${statusBadge}</td>
         <td>
-          ${d.balance_due > 0 ? `<button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="openPayModal('${d.supplier_name}', ${d.balance_due})">${t.btnPay}</button>` : '—'}
+          ${d.balance_due > 0 ? `<button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="openPayModal('${escapeHTML(d.supplier_name).replace(/'/g, "\\'")}', ${d.balance_due})">${escapeHTML(t.btnPay)}</button>` : '—'}
         </td>
       </tr>
     `;
@@ -664,17 +675,21 @@ function renderBills(bills) {
       ? `<span class="badge badge-warning">${t.statusPartial}</span>`
       : `<span class="badge badge-danger">${t.statusUnpaid}</span>`;
 
+    const imgLink = b.image_path ? `/bills/${encodeURIComponent(b.image_path)}` : '#';
+    const invNumDisplay = b.invoice_number || ('B-' + b.id);
+    const invDateDisplay = b.invoice_date ? b.invoice_date.split('T')[0] : '';
+
     return `
       <tr>
-        <td style="font-weight:600;"><a href="/bills/${b.image_path}" target="_blank" style="color:var(--accent-gold); text-decoration:none;">${b.invoice_number || 'B-'+b.id}</a></td>
-        <td>${b.invoice_date.split('T')[0]}</td>
-        <td>${b.vendor_name}</td>
+        <td style="font-weight:600;"><a href="${imgLink}" target="_blank" style="color:var(--accent-gold); text-decoration:none;">${escapeHTML(invNumDisplay)}</a></td>
+        <td>${escapeHTML(invDateDisplay)}</td>
+        <td>${escapeHTML(b.vendor_name)}</td>
         <td style="font-weight:700;">${formatCurrency(b.total)}</td>
         <td>${valBadge}</td>
         <td>${payBadge}</td>
         <td>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8rem;" onclick="viewBillDetails(${b.id})">${t.btnEdit}</button>
-          ${b.payment_status !== 'paid' ? `<button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8rem;" onclick="openDirectPay(${b.id}, '${b.vendor_name}', '${b.invoice_number}', ${b.total - b.amount_paid})">${t.btnRecordPay}</button>` : ''}
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8rem;" onclick="viewBillDetails(${b.id})">${escapeHTML(t.btnEdit)}</button>
+          ${b.payment_status !== 'paid' ? `<button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8rem;" onclick="openDirectPay(${b.id}, '${escapeHTML(b.vendor_name).replace(/'/g, "\\'")}', '${escapeHTML(b.invoice_number || '').replace(/'/g, "\\'")}', ${b.total - b.amount_paid})">${escapeHTML(t.btnRecordPay)}</button>` : ''}
         </td>
       </tr>
     `;
@@ -792,9 +807,9 @@ function renderReviewLineItems() {
   const tbody = document.getElementById('review-items-tbody');
   tbody.innerHTML = (activeReviewBill.line_items || []).map((it, idx) => `
     <tr>
-      <td><input type="text" value="${it.description || ''}" id="item-desc-${idx}" class="form-input" style="width:100%; text-align:left;"></td>
-      <td><input type="text" value="${it.hsn_code || ''}" id="item-hsn-${idx}" class="form-input" style="width:70px;"></td>
-      <td><input type="text" value="${it.pack_size || ''}" id="item-pack-${idx}" class="form-input" style="width:75px;"></td>
+      <td><input type="text" value="${escapeHTML(it.description || '')}" id="item-desc-${idx}" class="form-input" style="width:100%; text-align:left;"></td>
+      <td><input type="text" value="${escapeHTML(it.hsn_code || '')}" id="item-hsn-${idx}" class="form-input" style="width:70px;"></td>
+      <td><input type="text" value="${escapeHTML(it.pack_size || '')}" id="item-pack-${idx}" class="form-input" style="width:75px;"></td>
       <td><input type="number" step="0.1" value="${it.quantity || 0}" id="item-qty-${idx}" class="form-input" style="width:65px;" oninput="recalculateLineItem(${idx})"></td>
       <td><input type="number" step="0.01" value="${it.unit_price || 0}" id="item-rate-${idx}" class="form-input" style="width:75px;" oninput="recalculateLineItem(${idx})"></td>
       <td><input type="number" step="0.5" value="${it.gst_rate || 0}" id="item-gstrate-${idx}" class="form-input" style="width:60px;"></td>
@@ -963,12 +978,8 @@ function openDirectPay(billId, supplier, invNumber, balance) {
 }
 
 function openPayModal(supplier, totalBalance) {
-  const b = cachedBills.find(x => x.vendor_name === supplier && x.payment_status !== 'paid');
-  if (b) {
-    openDirectPay(b.id, b.vendor_name, b.invoice_number, b.total - b.amount_paid);
-  } else {
-    openDirectPay(0, supplier, "All Outstanding", totalBalance);
-  }
+  // Use bill_id = 0 to trigger server-side FIFO lump-sum distribution across all unpaid invoices of this supplier
+  openDirectPay(0, supplier, "All Outstanding (FIFO)", totalBalance);
 }
 
 function savePayment() {

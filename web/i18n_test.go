@@ -1,17 +1,18 @@
 package web_test
 
 import (
-	"os"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/munim-app/munim/web"
 )
 
 // TestAllUIStringsHaveHindiTranslation ensures every key in translations.en exists and is non-empty in translations.hi
 func TestAllUIStringsHaveHindiTranslation(t *testing.T) {
-	appJS, err := os.ReadFile("app.js")
+	appJS, err := web.StaticFS.ReadFile("app.js")
 	if err != nil {
-		t.Fatalf("Failed to read app.js: %v", err)
+		t.Fatalf("Failed to read app.js from embedded web.StaticFS: %v", err)
 	}
 
 	content := string(appJS)

@@ -8,6 +8,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -86,9 +87,15 @@ func processLoadedImage(img image.Image, originalPath, outputDir string) (*Proce
 	var tiles []string
 
 	// Gemma Quirk #2: Fixed-resolution vision input downsamples tall bills to small squares.
-	// If aspect ratio exceeds 1.6:1, slice into overlapping vertical tiles (~15% overlap)
+	// Dynamically calculate tiles from aspect ratio with a minimum of 2 and maximum of 4 tiles (~15% overlap)
 	if aspectRatio > 1.6 {
-		tiles = createVerticalTiles(targetImg, 2, 0.15)
+		numTiles := int(math.Ceil(aspectRatio / 1.5))
+		if numTiles < 2 {
+			numTiles = 2
+		} else if numTiles > 4 {
+			numTiles = 4
+		}
+		tiles = createVerticalTiles(targetImg, numTiles, 0.15)
 	}
 
 	var savedPath string
