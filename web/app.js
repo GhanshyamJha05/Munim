@@ -446,11 +446,15 @@ function uploadFile(file, confirmDuplicate = false) {
 
       cachedBills.unshift(newBill);
 
-      // Add a demo alert
+      // Add a demo alert with real evidence references
       const newAlert = {
         id: (cachedAlerts.length > 0 ? Math.max(...cachedAlerts.map(a => a.id || 0)) : 0) + 1,
         bill_id: newBillId,
         item_description: "Fortune Sunlite Refined Sunflower Oil 1L",
+        current_invoice_number: newBill.invoice_number,
+        current_bill_date: today,
+        reference_invoice_number: "INV-2026-002",
+        reference_bill_date: "2026-08-21",
         prior_price: 128.0,
         current_price: 135.0,
         percentage_change: 5.47,
@@ -460,19 +464,8 @@ function uploadFile(file, confirmDuplicate = false) {
       };
       cachedAlerts.unshift(newAlert);
 
-      // Update dues map
-      let vendorDue = cachedDues.find(d => d.vendor_name === newBill.vendor_name);
-      if (vendorDue) {
-        vendorDue.total_outstanding += total;
-        vendorDue.pending_bills_count += 1;
-      } else {
-        cachedDues.push({
-          vendor_name: newBill.vendor_name,
-          total_outstanding: total,
-          oldest_due_date: newBill.due_date,
-          pending_bills_count: 1
-        });
-      }
+      // Update dues directly from bills
+      cachedDues = calculateDuesFromBills(cachedBills);
 
       // Persist in localStorage for user session
       localStorage.setItem('munim_demo_bills', JSON.stringify(cachedBills));
@@ -587,6 +580,49 @@ function toggleZoomImage() {
   container.classList.toggle('zoomed');
 }
 
+function calculateDuesFromBills(bills) {
+  const map = {};
+  const today = new Date().toISOString().split('T')[0];
+
+  bills.forEach(b => {
+    const sName = b.vendor_name || 'Unknown Supplier';
+    if (!map[sName]) {
+      map[sName] = {
+        supplier_name: sName,
+        total_billed: 0,
+        total_paid: 0,
+        balance_due: 0,
+        earliest_due: null,
+        is_overdue: false,
+        overdue_bills: 0,
+        overdue_days: 0
+      };
+    }
+    const sup = map[sName];
+    sup.total_billed += (b.total || 0);
+    sup.total_paid += (b.amount_paid || 0);
+    const bal = (b.total || 0) - (b.amount_paid || 0);
+    sup.balance_due += bal;
+
+    if (bal > 0.01) {
+      const dueDate = b.due_date ? b.due_date.split('T')[0] : (b.invoice_date ? b.invoice_date.split('T')[0] : today);
+      if (!sup.earliest_due || dueDate < sup.earliest_due) {
+        sup.earliest_due = dueDate;
+      }
+      if (dueDate < today) {
+        sup.is_overdue = true;
+        sup.overdue_bills += 1;
+        const diffDays = Math.round((new Date(today) - new Date(dueDate)) / (1000 * 60 * 60 * 24));
+        if (diffDays > sup.overdue_days) {
+          sup.overdue_days = diffDays;
+        }
+      }
+    }
+  });
+
+  return Object.values(map);
+}
+
 function loadDashboard() {
   Promise.all([
     fetch('/api/bills').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
@@ -610,22 +646,31 @@ function loadDashboard() {
     const savedBills = localStorage.getItem('munim_demo_bills');
     const savedAlerts = localStorage.getItem('munim_demo_alerts');
     const savedDues = localStorage.getItem('munim_demo_dues');
-    if (savedBills && savedAlerts && savedDues) {
-      cachedBills = JSON.parse(savedBills);
-      cachedAlerts = JSON.parse(savedAlerts);
-      cachedDues = JSON.parse(savedDues);
-      initDashboardView();
-    } else {
-      fetch('/demo_data.json')
-        .then(r => r.json())
-        .then(demoData => {
-          cachedBills = demoData.bills || [];
-          cachedAlerts = demoData.alerts || [];
-          cachedDues = demoData.dues || [];
-          initDashboardView();
-        })
-        .catch(err => console.error("Could not load demo data:", err));
+    if (savedBills) {
+      try {
+        cachedBills = JSON.parse(savedBills);
+        cachedAlerts = savedAlerts ? JSON.parse(savedAlerts) : [];
+        // Calculate dues dynamically from bills to always stay 100% in sync
+        cachedDues = calculateDuesFromBills(cachedBills);
+        initDashboardView();
+        return;
+      } catch (e) {
+        console.error("Error parsing saved demo state:", e);
+      }
     }
+    
+    fetch('/demo_data.json')
+      .then(r => r.json())
+      .then(demoData => {
+        cachedBills = demoData.bills || [];
+        cachedAlerts = demoData.alerts || [];
+        cachedDues = calculateDuesFromBills(cachedBills);
+        localStorage.setItem('munim_demo_bills', JSON.stringify(cachedBills));
+        localStorage.setItem('munim_demo_alerts', JSON.stringify(cachedAlerts));
+        localStorage.setItem('munim_demo_dues', JSON.stringify(cachedDues));
+        initDashboardView();
+      })
+      .catch(err => console.error("Could not load demo data:", err));
   });
 }
 
@@ -854,6 +899,7 @@ function viewBillDetails(billId) {
 
 // Requirement 5: Review modal showing and allowing editing of supplier, GSTIN, invoice number, date, subtotal, each tax, round-off, total, HSN, and GST rate per line. Highlight failing fields with plain language in English & Hindi.
 function openReviewModal(bill) {
+  if (!bill) return;
   activeReviewBill = bill;
   if (!activeReviewBill.line_items && activeReviewBill.line_items_json) {
     try {
@@ -865,6 +911,7 @@ function openReviewModal(bill) {
 
   const t = translations[currentLanguage];
   const modal = document.getElementById('review-modal');
+  if (!modal) return;
 
   // Set bill image (handle absolute, relative or sample)
   const imgSrc = (bill.image_path && bill.image_path.startsWith('/')) 
@@ -875,23 +922,30 @@ function openReviewModal(bill) {
     imgEl.src = imgSrc;
     imgEl.onerror = () => { imgEl.src = '/sample_bill.jpg'; };
   }
-  document.getElementById('zoom-container').classList.remove('zoomed');
+  const zoomC = document.getElementById('zoom-container');
+  if (zoomC) zoomC.classList.remove('zoomed');
 
   // Fill Header Inputs
-  document.getElementById('edit-vendor-name').value = bill.vendor_name || '';
-  document.getElementById('edit-vendor-gstin').value = bill.vendor_gstin || '';
-  document.getElementById('edit-invoice-number').value = bill.invoice_number || '';
-  document.getElementById('edit-invoice-date').value = bill.invoice_date ? bill.invoice_date.split('T')[0] : '';
-  document.getElementById('edit-due-date').value = bill.due_date ? bill.due_date.split('T')[0] : '';
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  setVal('edit-vendor-name', bill.vendor_name || '');
+  setVal('edit-vendor-gstin', bill.vendor_gstin || '');
+  setVal('edit-invoice-number', bill.invoice_number || '');
+  setVal('edit-invoice-date', bill.invoice_date ? bill.invoice_date.split('T')[0] : '');
+  setVal('edit-due-date', bill.due_date ? bill.due_date.split('T')[0] : '');
 
   // Fill Taxes & Totals
-  document.getElementById('edit-subtotal').value = (bill.subtotal || 0).toFixed(2);
-  document.getElementById('edit-cgst').value = (bill.cgst || 0).toFixed(2);
-  document.getElementById('edit-sgst').value = (bill.sgst || 0).toFixed(2);
-  document.getElementById('edit-igst').value = (bill.igst || 0).toFixed(2);
-  document.getElementById('edit-roundoff').value = (bill.round_off || 0).toFixed(2);
-  document.getElementById('edit-total').value = (bill.total || 0).toFixed(2);
-  document.getElementById('review-bill-total-display').textContent = formatCurrency(bill.total || 0);
+  setVal('edit-subtotal', (bill.subtotal || 0).toFixed(2));
+  setVal('edit-cgst', (bill.cgst || 0).toFixed(2));
+  setVal('edit-sgst', (bill.sgst || 0).toFixed(2));
+  setVal('edit-igst', (bill.igst || 0).toFixed(2));
+  setVal('edit-roundoff', (bill.round_off || 0).toFixed(2));
+  setVal('edit-total', (bill.total || 0).toFixed(2));
+  const totDisp = document.getElementById('review-bill-total-display');
+  if (totDisp) totDisp.textContent = formatCurrency(bill.total || 0);
 
   // Clear previous error highlights
   document.querySelectorAll('.form-group').forEach(el => el.classList.remove('field-error'));
@@ -901,19 +955,24 @@ function openReviewModal(bill) {
 
   // Plain-Language Error Highlighting & Banner
   const errorsDiv = document.getElementById('review-validation-errors');
-  const hasErrors = bill.validation_errors && bill.validation_errors.length > 0;
+  const errList = Array.isArray(bill.validation_errors) 
+    ? bill.validation_errors 
+    : (typeof bill.validation_errors === 'string' ? (() => { try { return JSON.parse(bill.validation_errors); } catch(e) { return []; } })() : []);
+  const hasErrors = errList && errList.length > 0;
   const approveBtn = document.getElementById('review-approve-btn');
 
   if (hasErrors) {
-    approveBtn.textContent = t.btnApproveAnyway;
-    approveBtn.classList.remove('btn-primary');
-    approveBtn.classList.add('btn-secondary');
-    approveBtn.style.color = '#fbbf24';
-    approveBtn.style.borderColor = '#fbbf24';
+    if (approveBtn) {
+      approveBtn.textContent = t.btnApproveAnyway;
+      approveBtn.classList.remove('btn-primary');
+      approveBtn.classList.add('btn-secondary');
+      approveBtn.style.color = '#fbbf24';
+      approveBtn.style.borderColor = '#fbbf24';
+    }
 
     // Highlight failing fields
     const bannerItems = [];
-    bill.validation_errors.forEach(err => {
+    errList.forEach(err => {
       let fld = "";
       let eng = err;
       let hnd = "";
@@ -952,14 +1011,18 @@ function openReviewModal(bill) {
       `);
     });
 
-    errorsDiv.innerHTML = bannerItems.join('');
-    errorsDiv.style.display = 'block';
+    if (errorsDiv) {
+      errorsDiv.innerHTML = bannerItems.join('');
+      errorsDiv.style.display = 'block';
+    }
   } else {
-    approveBtn.textContent = t.btnApproveSave;
-    approveBtn.classList.remove('btn-secondary');
-    approveBtn.classList.add('btn-primary');
-    approveBtn.style.color = '#0f172a';
-    errorsDiv.style.display = 'none';
+    if (approveBtn) {
+      approveBtn.textContent = t.btnApproveSave;
+      approveBtn.classList.remove('btn-secondary');
+      approveBtn.classList.add('btn-primary');
+      approveBtn.style.color = '#0f172a';
+    }
+    if (errorsDiv) errorsDiv.style.display = 'none';
   }
 
   modal.style.display = 'flex';
@@ -1200,16 +1263,7 @@ function savePayment() {
     }
 
     // Update dues
-    const d = cachedDues.find(x => x.supplier_name === supName);
-    if (d) {
-      d.total_paid += amount;
-      d.balance_due = Math.max(0, d.balance_due - amount);
-      if (d.balance_due <= 0.01) {
-        d.is_overdue = false;
-        d.overdue_bills = 0;
-        d.overdue_days = 0;
-      }
-    }
+    cachedDues = calculateDuesFromBills(cachedBills);
 
     localStorage.setItem('munim_demo_bills', JSON.stringify(cachedBills));
     localStorage.setItem('munim_demo_dues', JSON.stringify(cachedDues));
