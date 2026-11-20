@@ -725,6 +725,126 @@ tr:hover td {
 }
 
 /* ==========================================================================
+   PURCHASE ANALYTICS SECTION (Spending comparisons & visual trend)
+   ========================================================================== */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 992px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-bars-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  height: 180px;
+  padding: 16px 8px 8px;
+}
+
+.chart-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.chart-bar-fill {
+  width: 100%;
+  max-width: 38px;
+  background: var(--blue-primary);
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  transition: height 0.4s ease, background-color 0.2s;
+  min-height: 4px;
+}
+
+.chart-bar-col.active .chart-bar-fill {
+  background: var(--emerald-primary);
+}
+
+.chart-bar-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.chart-bar-val {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.supplier-spend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.supplier-spend-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.supplier-spend-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.supplier-spend-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.supplier-spend-amount {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--emerald-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.quick-filter-pill {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.quick-filter-pill.active, .quick-filter-pill:hover {
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  border-color: var(--text-primary);
+}
+
+/* ==========================================================================
    MODALS (Review, Payment, QR)
    ========================================================================== */
 .modal-overlay {

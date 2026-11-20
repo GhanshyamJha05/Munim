@@ -734,9 +734,76 @@ function initDashboardView() {
 function renderAll() {
   applyTranslations();
   calculateMetrics(cachedBills);
+  renderAnalytics(cachedBills);
   renderAlerts(cachedAlerts);
   renderDues(cachedDues);
   renderBills(cachedBills);
+}
+
+function renderAnalytics(bills) {
+  const chartContainer = document.getElementById('monthly-trend-chart');
+  const suppliersContainer = document.getElementById('top-suppliers-list');
+  if (!chartContainer || !suppliersContainer) return;
+
+  // 1. Calculate Monthly Spending for the last 6 months
+  const monthlyTotals = {};
+  const supplierTotals = {};
+  let overallTotal = 0;
+
+  bills.forEach(b => {
+    if (!b.invoice_date) return;
+    const m = b.invoice_date.split('T')[0].substring(0, 7);
+    const tot = b.total || 0;
+    monthlyTotals[m] = (monthlyTotals[m] || 0) + tot;
+    overallTotal += tot;
+
+    const s = b.vendor_name || 'Other';
+    supplierTotals[s] = (supplierTotals[s] || 0) + tot;
+  });
+
+  const sortedMonths = Object.keys(monthlyTotals).sort().slice(-6);
+  if (sortedMonths.length === 0) {
+    chartContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; margin:auto;">No purchase transactions recorded yet.</div>`;
+    suppliersContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:12px;">No supplier data.</div>`;
+    return;
+  }
+
+  const maxVal = Math.max(...sortedMonths.map(m => monthlyTotals[m]), 1);
+
+  // Render Bar Chart
+  chartContainer.innerHTML = sortedMonths.map(m => {
+    const val = monthlyTotals[m];
+    const pct = Math.max(12, Math.round((val / maxVal) * 100));
+    const isCurrent = m === selectedSpendMonth;
+    const shortLabel = m.substring(5); // e.g. "08", "09"
+    return `
+      <div class="chart-bar-col ${isCurrent ? 'active' : ''}" title="${m}: ${formatCurrency(val)}">
+        <span class="chart-bar-val">₹${Math.round(val / 1000)}k</span>
+        <div class="chart-bar-fill" style="height: ${pct}%;"></div>
+        <span class="chart-bar-label">${shortLabel}</span>
+      </div>
+    `;
+  }).join('');
+
+  // Render Top Suppliers Breakdown
+  const topSuppliers = Object.entries(supplierTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+
+  suppliersContainer.innerHTML = topSuppliers.map(([name, amt]) => {
+    const pct = overallTotal > 0 ? Math.round((amt / overallTotal) * 100) : 0;
+    return `
+      <div class="supplier-spend-item">
+        <div class="supplier-spend-meta">
+          <span class="supplier-spend-name">${escapeHTML(name)}</span>
+          <span class="supplier-spend-amount">${formatCurrency(amt)} <span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">(${pct}%)</span></span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: ${pct}%;"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function calculateMetrics(bills) {

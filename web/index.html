@@ -27,6 +27,10 @@
           <span class="nav-icon">📊</span>
           <span>Overview</span>
         </a>
+        <a class="nav-item" href="#analytics-section">
+          <span class="nav-icon">📈</span>
+          <span>Analytics & Reports</span>
+        </a>
         <a class="nav-item" href="#upload-section">
           <span class="nav-icon">📸</span>
           <span>Upload Invoices</span>
@@ -39,7 +43,7 @@
         </a>
         <a class="nav-item" href="#alerts-section">
           <span class="nav-icon">⚡</span>
-          <span>Price Alerts</span>
+          <span>Price Intelligence</span>
         </a>
         <a class="nav-item" href="#ledger-section">
           <span class="nav-icon">📑</span>
@@ -131,6 +135,34 @@
             </div>
           </div>
         </div>
+
+        <!-- Purchase Analytics (Interactive Visual Chart & Supplier Spend) -->
+        <section class="section-panel" id="analytics-section">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>📈</span> <span>Purchase Analytics & Spend Distribution</span>
+            </div>
+          </div>
+          <div class="analytics-grid">
+            <div style="padding: 16px; border-right: 1px solid var(--border-light);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Monthly Purchase Trend</span>
+                <span style="font-size: 0.74rem; color: var(--text-muted);">Last 6 Months (₹)</span>
+              </div>
+              <div class="chart-bars-container" id="monthly-trend-chart">
+                <!-- Dynamically rendered bars -->
+              </div>
+            </div>
+            <div>
+              <div style="padding: 16px 16px 8px; border-bottom: 1px solid var(--border-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">
+                Top Suppliers by Volume
+              </div>
+              <div class="supplier-spend-list" id="top-suppliers-list">
+                <!-- Dynamically rendered supplier share -->
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- Bill Ingestion / Dropzone Panel -->
         <section id="upload-section">
