@@ -1000,17 +1000,37 @@ function renderAnalytics(bills) {
 
   const maxVal = Math.max(...sortedMonths.map(m => monthlyTotals[m]), 1);
 
-  // Render Bar Chart
+  const monthNames = {
+    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+    '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug',
+    '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'
+  };
+
+  // Render Premium Financial Bar Chart with baseline and pill values
   chartContainer.innerHTML = sortedMonths.map(m => {
     const val = monthlyTotals[m];
-    const pct = Math.max(12, Math.round((val / maxVal) * 100));
+    const pct = Math.max(12, Math.min(100, Math.round((val / maxVal) * 100)));
     const isCurrent = m === selectedSpendMonth;
-    const shortLabel = m.substring(5); // e.g. "08", "09"
+    const parts = m.split('-');
+    const monthNum = parts[1] || '';
+    const monthLabel = monthNames[monthNum] || monthNum;
+    const yearLabel = parts[0] ? `'${parts[0].slice(2)}` : '';
+    const formattedAmt = val >= 100000 
+      ? `₹${(val / 100000).toFixed(1)}L` 
+      : val >= 1000 
+      ? `₹${Math.round(val / 1000)}k` 
+      : `₹${Math.round(val)}`;
+
     return `
-      <div class="chart-bar-col ${isCurrent ? 'active' : ''}" title="${m}: ${formatCurrency(val)}">
-        <span class="chart-bar-val">₹${Math.round(val / 1000)}k</span>
-        <div class="chart-bar-fill" style="height: ${pct}%;"></div>
-        <span class="chart-bar-label">${shortLabel}</span>
+      <div class="chart-bar-col ${isCurrent ? 'active' : ''}" title="${monthLabel} ${parts[0]}: ${formatCurrency(val)}" onclick="selectedSpendMonth='${m}'; calculateMetrics(cachedBills); renderAnalytics(cachedBills);">
+        <span class="chart-bar-val">${formattedAmt}</span>
+        <div class="chart-bar-track">
+          <div class="chart-bar-fill" style="height: ${pct}%;"></div>
+        </div>
+        <div class="chart-bar-labels-group">
+          <span class="chart-bar-month">${monthLabel}</span>
+          <span class="chart-bar-year">${yearLabel}</span>
+        </div>
       </div>
     `;
   }).join('');
