@@ -213,6 +213,7 @@ const translations = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  setupNavigationDrawer();
   setupThemeToggle();
   setupLanguageToggle();
   setupSettings();
@@ -221,6 +222,37 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMonthPickers();
   loadDashboard();
 });
+
+function setupNavigationDrawer() {
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const sidebar = document.querySelector('.app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (!menuBtn || !sidebar || !backdrop) return;
+
+  const toggleSidebar = () => {
+    sidebar.classList.toggle('open');
+    backdrop.classList.toggle('active');
+  };
+
+  const closeSidebar = () => {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('active');
+  };
+
+  menuBtn.addEventListener('click', toggleSidebar);
+  backdrop.addEventListener('click', closeSidebar);
+
+  // Close when clicking any nav item link
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.sidebar-nav .nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      if (window.innerWidth <= 840) {
+        closeSidebar();
+      }
+    });
+  });
+}
 
 function setupThemeToggle() {
   const themeSelect = document.getElementById('theme-select');
