@@ -120,6 +120,45 @@ const translations = {
     duplicateWarning: "This bill was already added. Do you want to add it anyway?",
     viewExisting: "View Existing Bill",
     daysOverdue: "days overdue",
+    navOverview: "Overview",
+    navBills: "Bills & Invoices",
+    navUpload: "Upload Invoices",
+    navSuppliers: "Suppliers",
+    navPayments: "Payments",
+    navPriceIntel: "Price Intelligence",
+    navReports: "Reports & Analytics",
+    navSettings: "Settings",
+    titleDashboard: "Accounts Overview",
+    titleBills: "Bills & Invoices Ledger",
+    titleUpload: "Invoice Capture & Upload",
+    titleBillDetails: "Invoice Details",
+    titleBillReview: "Review & Verify Bill",
+    titleSuppliers: "Supplier Management",
+    titleSupplierDetails: "Supplier Profile & History",
+    titlePayments: "Supplier Dues & Payments",
+    titlePriceIntel: "Price Intelligence & Trends",
+    titleReports: "Financial Reports & CA Pack",
+    titleSettings: "Settings & System Preferences",
+    btnBackToBills: "← Back to Bills",
+    btnBackToSuppliers: "← Back to Suppliers",
+    btnNewUpload: "📸 Capture New Bill",
+    lblSearchInvoices: "Search supplier or invoice number...",
+    lblSearchSuppliers: "Search suppliers...",
+    lblFilterStatus: "Status Filter",
+    lblAllStatuses: "All Statuses",
+    lblNoMatchingBills: "No invoices match the selected filter.",
+    lblNoMatchingSuppliers: "No suppliers found.",
+    lblBillCount: "Invoices",
+    lblTotalPurchases: "Total Purchases",
+    lblOutstandingDues: "Outstanding Dues",
+    lblPaymentHistory: "Payment History",
+    lblGeneralSettings: "General Settings",
+    lblThemePref: "Visual Theme",
+    lblModelPref: "Local Gemma AI Model",
+    lblLangPref: "Language / भाषा",
+    lblMobileAccess: "Mobile Camera LAN Access",
+    lblSystemInfo: "System & Privacy Info",
+    lblLocalNotice: "100% on-device private AI accounting running locally on this machine.",
   },
   hi: {
     brand: "मुनीम (Munim)",
@@ -209,19 +248,161 @@ const translations = {
     duplicateWarning: "यह बिल पहले ही जोड़ा जा चुका है। क्या आप इसे फिर भी जोड़ना चाहते हैं?",
     viewExisting: "मौजूदा बिल देखें",
     daysOverdue: "दिन अवधि पार",
+    navOverview: "अवलोकन",
+    navBills: "बिल और इनवॉइस",
+    navUpload: "बिल अपलोड करें",
+    navSuppliers: "सप्लायर हिसाब",
+    navPayments: "भुगतान और बकाया",
+    navPriceIntel: "रेट बदलाव और बचत",
+    navReports: "रिपोर्ट और हिसाब",
+    navSettings: "सेटिंग्स",
+    titleDashboard: "खाता अवलोकन",
+    titleBills: "सभी बिलों की डायरी",
+    titleUpload: "बिल फोटो व स्कैन",
+    titleBillDetails: "बिल का पूरा विवरण",
+    titleBillReview: "बिल की जांच व सुधार",
+    titleSuppliers: "सप्लायरों का हिसाब",
+    titleSupplierDetails: "सप्लायर प्रोफाइल और लेनदेन",
+    titlePayments: "सप्लायर बकाया व भुगतान",
+    titlePriceIntel: "रेट में बदलाव की जांच",
+    titleReports: "वित्तीय रिपोर्ट व CA पैक",
+    titleSettings: "सेटिंग्स व प्राथमिकताएं",
+    btnBackToBills: "← बिलों पर वापस जाएं",
+    btnBackToSuppliers: "← सप्लायरों पर वापस जाएं",
+    btnNewUpload: "📸 नया बिल अपलोड करें",
+    lblSearchInvoices: "सप्लायर या बिल संख्या खोजें...",
+    lblSearchSuppliers: "सप्लायर खोजें...",
+    lblFilterStatus: "स्थिति अनुसार",
+    lblAllStatuses: "सभी स्थितियां",
+    lblNoMatchingBills: "कोई बिल मेल नहीं खाता।",
+    lblNoMatchingSuppliers: "कोई सप्लायर नहीं मिला।",
+    lblBillCount: "कुल बिल",
+    lblTotalPurchases: "कुल खरीदारी",
+    lblOutstandingDues: "कुल बकाया",
+    lblPaymentHistory: "भुगतान इतिहास",
+    lblGeneralSettings: "सामान्य सेटिंग्स",
+    lblThemePref: "थीम मोड",
+    lblModelPref: "लोकल Gemma AI मॉडल",
+    lblLangPref: "भाषा / Language",
+    lblMobileAccess: "मोबाइल कैमरा वाई-फाई एक्सेस",
+    lblSystemInfo: "सिस्टम और गोपनीयता जानकारी",
+    lblLocalNotice: "100% ऑन-डिवाइस प्राइवेट AI मुनीम जो आपके कंप्यूटर पर ही चलता है।",
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigationDrawer();
+  setupRouter();
   setupThemeToggle();
   setupLanguageToggle();
   setupSettings();
   setupUpload();
   setupModals();
   setupMonthPickers();
+  setupSearchAndFilters();
   loadDashboard();
 });
+
+// Lightweight Hash-based Client-Side Router
+function setupRouter() {
+  window.addEventListener('hashchange', handleRoute);
+  // Default to #/dashboard if hash empty
+  if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#dashboard-section') {
+    window.location.hash = '#/dashboard';
+  } else {
+    handleRoute();
+  }
+}
+
+function handleRoute() {
+  const hash = window.location.hash || '#/dashboard';
+  const cleanPath = hash.replace(/^#\/?/, '').split('?')[0];
+  const parts = cleanPath.split('/');
+  const route = parts[0] || 'dashboard';
+  const param = parts[1] || '';
+  const subAction = parts[2] || '';
+
+  // Hide all views
+  document.querySelectorAll('.app-view').forEach(view => {
+    view.classList.remove('active');
+  });
+
+  // Update sidebar active link
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+    item.classList.remove('active');
+    const itemRoute = item.getAttribute('data-route');
+    if (itemRoute === route || (itemRoute === 'bills' && route === 'bills') || (itemRoute === 'suppliers' && route === 'suppliers')) {
+      item.classList.add('active');
+    }
+  });
+
+  const pageTitleEl = document.querySelector('.page-title');
+  const t = translations[currentLanguage];
+
+  if (route === 'dashboard') {
+    const v = document.getElementById('view-dashboard');
+    if (v) v.classList.add('active');
+    if (pageTitleEl) pageTitleEl.textContent = t.titleDashboard;
+  } else if (route === 'bills') {
+    if (param === 'upload') {
+      const v = document.getElementById('view-upload');
+      if (v) v.classList.add('active');
+      if (pageTitleEl) pageTitleEl.textContent = t.titleUpload;
+    } else if (param && subAction === 'review') {
+      // Direct deep link to review: #/bills/:id/review
+      const billId = parseInt(param, 10);
+      viewBillDetails(billId);
+      if (pageTitleEl) pageTitleEl.textContent = t.titleBillReview;
+    } else if (param) {
+      // Invoice detail view: #/bills/:id
+      const billId = parseInt(param, 10);
+      renderBillDetailsView(billId);
+      if (pageTitleEl) pageTitleEl.textContent = t.titleBillDetails;
+    } else {
+      const v = document.getElementById('view-bills');
+      if (v) v.classList.add('active');
+      if (pageTitleEl) pageTitleEl.textContent = t.titleBills;
+      renderBills(cachedBills);
+    }
+  } else if (route === 'suppliers') {
+    if (param) {
+      // Supplier detail view: #/suppliers/:name
+      renderSupplierDetailsView(decodeURIComponent(param));
+      if (pageTitleEl) pageTitleEl.textContent = t.titleSupplierDetails;
+    } else {
+      const v = document.getElementById('view-suppliers');
+      if (v) v.classList.add('active');
+      if (pageTitleEl) pageTitleEl.textContent = t.titleSuppliers;
+      renderDues(cachedDues);
+    }
+  } else if (route === 'payments') {
+    const v = document.getElementById('view-payments');
+    if (v) v.classList.add('active');
+    if (pageTitleEl) pageTitleEl.textContent = t.titlePayments;
+    renderPaymentsWorkspace(cachedDues);
+  } else if (route === 'price-intelligence') {
+    const v = document.getElementById('view-price-intel');
+    if (v) v.classList.add('active');
+    if (pageTitleEl) pageTitleEl.textContent = t.titlePriceIntel;
+    renderPriceIntelWorkspace(cachedAlerts);
+  } else if (route === 'reports') {
+    const v = document.getElementById('view-reports');
+    if (v) v.classList.add('active');
+    if (pageTitleEl) pageTitleEl.textContent = t.titleReports;
+    renderReportsWorkspace(cachedBills);
+  } else if (route === 'settings') {
+    const v = document.getElementById('view-settings');
+    if (v) v.classList.add('active');
+    if (pageTitleEl) pageTitleEl.textContent = t.titleSettings;
+  } else {
+    // Fallback to dashboard
+    const v = document.getElementById('view-dashboard');
+    if (v) v.classList.add('active');
+    if (pageTitleEl) pageTitleEl.textContent = t.titleDashboard;
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function setupNavigationDrawer() {
   const menuBtn = document.getElementById('mobile-menu-btn');
@@ -378,6 +559,23 @@ function applyTranslations() {
   setTxt('lbl-pay-date', t.lblPayDate);
   setTxt('lbl-pay-mode', t.lblPayMode);
   setTxt('t-save-payment-btn', t.btnSavePayment);
+
+  // New multi-page navigation elements
+  setTxt('t-nav-overview', t.navOverview);
+  setTxt('t-nav-bills', t.navBills);
+  setTxt('t-nav-upload', t.navUpload);
+  setTxt('t-nav-suppliers', t.navSuppliers);
+  setTxt('t-nav-payments', t.navPayments);
+  setTxt('t-nav-price-intel', t.navPriceIntel);
+  setTxt('t-nav-reports', t.navReports);
+  setTxt('t-nav-settings', t.navSettings);
+  setTxt('p-bills-title', t.titleBills);
+  setTxt('lbl-theme-pref', t.lblThemePref);
+  setTxt('lbl-lang-pref', t.lblLangPref);
+  setTxt('lbl-model-pref', t.lblModelPref);
+  setTxt('lbl-mobile-access', t.lblMobileAccess);
+  setTxt('lbl-system-info', t.lblSystemInfo);
+  setTxt('lbl-local-notice', t.lblLocalNotice);
 }
 
 function setupMonthPickers() {
@@ -926,14 +1124,15 @@ function renderDues(dues) {
 
     return `
       <tr>
-        <td style="font-weight:600;">${escapeHTML(d.supplier_name)}</td>
+        <td style="font-weight:600;"><a href="#/suppliers/${encodeURIComponent(d.supplier_name)}" style="color:var(--text-primary); text-decoration:none; font-weight:700;">${escapeHTML(d.supplier_name)}</a></td>
         <td>${formatCurrency(d.total_billed)}</td>
         <td>${formatCurrency(d.total_paid)}</td>
-        <td style="color:${d.balance_due > 0 ? 'var(--accent-gold)' : 'var(--accent-green)'}; font-weight:700;">${formatCurrency(d.balance_due)}</td>
+        <td style="color:${d.balance_due > 0 ? 'var(--rose-primary)' : 'var(--emerald-primary)'}; font-weight:700;">${formatCurrency(d.balance_due)}</td>
         <td>${escapeHTML(dueDateStr)}</td>
         <td>${statusBadge}</td>
-        <td>
-          ${d.balance_due > 0 ? `<button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="openPayModal('${escapeHTML(d.supplier_name).replace(/'/g, "\\'")}', ${d.balance_due})">${escapeHTML(t.btnPay)}</button>` : '—'}
+        <td style="text-align: right;">
+          <a class="btn btn-secondary btn-sm" href="#/suppliers/${encodeURIComponent(d.supplier_name)}">Ledger</a>
+          ${d.balance_due > 0 ? `<button class="btn btn-emerald btn-sm" onclick="openPayModal('${escapeHTML(d.supplier_name).replace(/'/g, "\\'")}', ${d.balance_due})">${escapeHTML(t.btnPay)}</button>` : '—'}
         </td>
       </tr>
     `;
@@ -978,15 +1177,16 @@ function renderBills(bills) {
 
     return `
       <tr>
-        <td style="font-weight:600;"><a href="${imgLink}" target="_blank" style="color:var(--accent-gold); text-decoration:none;">${escapeHTML(invNumDisplay)}</a></td>
+        <td style="font-weight:600;"><a href="#/bills/${b.id}" style="color:var(--text-primary); text-decoration:none; font-weight:700;">${escapeHTML(invNumDisplay)}</a></td>
         <td>${escapeHTML(invDateDisplay)}</td>
-        <td>${escapeHTML(b.vendor_name)}</td>
+        <td><a href="#/suppliers/${encodeURIComponent(b.vendor_name || '')}" style="color:var(--text-secondary); text-decoration:none;">${escapeHTML(b.vendor_name)}</a></td>
         <td style="font-weight:700;">${formatCurrency(b.total)}</td>
         <td>${valBadge}</td>
         <td>${payBadge}</td>
-        <td>
-          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8rem;" onclick="viewBillDetails(${b.id})">${escapeHTML(t.btnEdit)}</button>
-          ${b.payment_status !== 'paid' ? `<button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8rem;" onclick="openDirectPay(${b.id}, '${escapeHTML(b.vendor_name).replace(/'/g, "\\'")}', '${escapeHTML(b.invoice_number || '').replace(/'/g, "\\'")}', ${b.total - b.amount_paid})">${escapeHTML(t.btnRecordPay)}</button>` : ''}
+        <td style="text-align: right;">
+          <a class="btn btn-secondary btn-sm" href="#/bills/${b.id}">Details</a>
+          <button class="btn btn-secondary btn-sm" onclick="viewBillDetails(${b.id})">${escapeHTML(t.btnEdit)}</button>
+          ${b.payment_status !== 'paid' ? `<button class="btn btn-secondary btn-sm" onclick="openDirectPay(${b.id}, '${escapeHTML(b.vendor_name).replace(/'/g, "\\'")}', '${escapeHTML(b.invoice_number || '').replace(/'/g, "\\'")}', ${b.total - b.amount_paid})">${escapeHTML(t.btnRecordPay)}</button>` : ''}
         </td>
       </tr>
     `;
@@ -1406,4 +1606,307 @@ function savePayment() {
     loadDashboard();
   })
   .catch(err => alert("Error recording payment: " + err.message));
+}
+
+// ==========================================================================
+// MULTI-PAGE WORKSPACE RENDERING FUNCTIONS
+// ==========================================================================
+
+function setupSearchAndFilters() {
+  const billsSearch = document.getElementById('bills-search-input');
+  const billsStatus = document.getElementById('bills-status-filter');
+  const supSearch = document.getElementById('suppliers-search-input');
+  const uploadQrBtn = document.getElementById('upload-qr-btn');
+  const settingsQrBtn = document.getElementById('settings-qr-btn');
+  const settingsTheme = document.getElementById('settings-theme-select');
+  const settingsLang = document.getElementById('settings-lang-toggle');
+  const settingsModel = document.getElementById('settings-model-select');
+
+  if (billsSearch) {
+    billsSearch.addEventListener('input', () => renderFilteredBills());
+  }
+  if (billsStatus) {
+    billsStatus.addEventListener('change', () => renderFilteredBills());
+  }
+  if (supSearch) {
+    supSearch.addEventListener('input', () => renderFilteredSuppliers());
+  }
+
+  if (uploadQrBtn) {
+    uploadQrBtn.addEventListener('click', () => {
+      document.getElementById('qr-btn').click();
+    });
+  }
+  if (settingsQrBtn) {
+    settingsQrBtn.addEventListener('click', () => {
+      document.getElementById('qr-btn').click();
+    });
+  }
+
+  if (settingsTheme) {
+    const curTheme = localStorage.getItem('munim_theme') || 'light';
+    settingsTheme.value = curTheme;
+    settingsTheme.addEventListener('change', (e) => {
+      const tVal = e.target.value;
+      document.documentElement.setAttribute('data-theme', tVal);
+      localStorage.setItem('munim_theme', tVal);
+      const topSel = document.getElementById('theme-select');
+      if (topSel) topSel.value = tVal;
+    });
+  }
+
+  if (settingsLang) {
+    settingsLang.addEventListener('click', () => {
+      document.getElementById('lang-toggle').click();
+    });
+  }
+
+  if (settingsModel) {
+    const topModel = document.getElementById('model-select');
+    if (topModel) {
+      settingsModel.value = topModel.value;
+    }
+    settingsModel.addEventListener('change', (e) => {
+      if (topModel) {
+        topModel.value = e.target.value;
+        topModel.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+}
+
+function renderFilteredBills() {
+  const search = (document.getElementById('bills-search-input')?.value || '').toLowerCase();
+  const status = document.getElementById('bills-status-filter')?.value || 'ALL';
+  const monthFilter = document.getElementById('ledger-month-filter')?.value || 'ALL';
+
+  let list = cachedBills;
+  if (monthFilter !== 'ALL') {
+    list = list.filter(b => b.invoice_date && b.invoice_date.split('T')[0].startsWith(monthFilter));
+  }
+  if (status !== 'ALL') {
+    if (status === 'unpaid' || status === 'paid') {
+      list = list.filter(b => b.payment_status === status);
+    } else {
+      list = list.filter(b => b.validation_status === status);
+    }
+  }
+  if (search) {
+    list = list.filter(b => 
+      (b.vendor_name && b.vendor_name.toLowerCase().includes(search)) ||
+      (b.invoice_number && b.invoice_number.toLowerCase().includes(search))
+    );
+  }
+
+  renderBills(list);
+}
+
+function renderFilteredSuppliers() {
+  const search = (document.getElementById('suppliers-search-input')?.value || '').toLowerCase();
+  let list = cachedDues;
+  if (search) {
+    list = list.filter(d => d.supplier_name && d.supplier_name.toLowerCase().includes(search));
+  }
+  renderDues(list);
+}
+
+function renderBillDetailsView(billId) {
+  const b = cachedBills.find(x => x.id === billId);
+  const v = document.getElementById('view-bill-details');
+  if (!v) return;
+  v.classList.add('active');
+
+  if (!b) {
+    document.getElementById('detail-bill-heading').textContent = `Bill #${billId} Not Found`;
+    return;
+  }
+
+  const t = translations[currentLanguage];
+  document.getElementById('detail-bill-heading').textContent = `Invoice #${b.invoice_number || b.id}`;
+  document.getElementById('detail-supplier-name').textContent = b.vendor_name || '—';
+  document.getElementById('detail-supplier-gstin').textContent = b.vendor_gstin || '—';
+  document.getElementById('detail-inv-number').textContent = b.invoice_number || '—';
+  document.getElementById('detail-inv-date').textContent = b.invoice_date ? b.invoice_date.split('T')[0] : '—';
+  document.getElementById('detail-inv-total').textContent = formatCurrency(b.total);
+
+  const valBadge = b.validation_status === 'verified'
+    ? `<span class="badge badge-success">${t.statusVerified}</span>`
+    : b.validation_status === 'approved'
+    ? `<span class="badge badge-success">${t.statusApproved}</span>`
+    : `<span class="badge badge-danger">${t.statusNeedsReview}</span>`;
+  document.getElementById('detail-val-badge').innerHTML = valBadge;
+
+  document.getElementById('detail-subtotal').textContent = formatCurrency(b.subtotal);
+  document.getElementById('detail-cgst').textContent = formatCurrency(b.cgst);
+  document.getElementById('detail-sgst').textContent = formatCurrency(b.sgst);
+  document.getElementById('detail-igst').textContent = formatCurrency(b.igst);
+  document.getElementById('detail-roundoff').textContent = formatCurrency(b.round_off);
+  document.getElementById('detail-grandtotal').textContent = formatCurrency(b.total);
+
+  const imgEl = document.getElementById('detail-bill-img');
+  if (imgEl) {
+    imgEl.src = (b.image_path && b.image_path.startsWith('/')) ? b.image_path : `/bills/${b.image_path || 'sample_bill.jpg'}`;
+    imgEl.onerror = () => { imgEl.src = '/sample_bill.jpg'; };
+  }
+
+  // Populate line items
+  let items = b.line_items;
+  if (!items && b.line_items_json) {
+    try { items = JSON.parse(b.line_items_json); } catch (e) { items = []; }
+  }
+  const tbody = document.getElementById('detail-items-tbody');
+  if (tbody) {
+    if (!items || items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No line items recorded.</td></tr>`;
+    } else {
+      tbody.innerHTML = items.map(it => `
+        <tr>
+          <td style="font-weight: 600;">${escapeHTML(it.description)}</td>
+          <td class="cell-mono">${escapeHTML(it.hsn_code || '—')}</td>
+          <td>${escapeHTML(it.pack_size || '—')}</td>
+          <td style="text-align: right;">${it.quantity}</td>
+          <td style="text-align: right;">${formatCurrency(it.unit_price)}</td>
+          <td style="text-align: right;">${it.gst_rate}%</td>
+          <td style="text-align: right; font-weight: 600;">${formatCurrency(it.taxable_value || (it.quantity * it.unit_price))}</td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  // Actions
+  const actionsEl = document.getElementById('detail-bill-actions');
+  if (actionsEl) {
+    actionsEl.innerHTML = `
+      <button class="btn btn-secondary" onclick="viewBillDetails(${b.id})">✏️ Edit / Review</button>
+      ${b.payment_status !== 'paid' ? `<button class="btn btn-emerald" onclick="openDirectPay(${b.id}, '${escapeHTML(b.vendor_name).replace(/'/g, "\\'")}', '${escapeHTML(b.invoice_number || '').replace(/'/g, "\\'")}', ${b.total - b.amount_paid})">💳 Pay Bill</button>` : ''}
+    `;
+  }
+}
+
+function renderSupplierDetailsView(supplierName) {
+  const v = document.getElementById('view-supplier-details');
+  if (!v) return;
+  v.classList.add('active');
+
+  const supDues = cachedDues.find(x => x.supplier_name.toLowerCase() === supplierName.toLowerCase());
+  const bills = cachedBills.filter(x => x.vendor_name && x.vendor_name.toLowerCase() === supplierName.toLowerCase());
+
+  document.getElementById('sup-detail-name').textContent = supplierName;
+  document.getElementById('sup-detail-sub').textContent = `${bills.length} invoices on record`;
+
+  const billed = supDues ? supDues.total_billed : bills.reduce((acc, b) => acc + (b.total || 0), 0);
+  const paid = supDues ? supDues.total_paid : bills.reduce((acc, b) => acc + (b.amount_paid || 0), 0);
+  const balance = supDues ? supDues.balance_due : (billed - paid);
+
+  document.getElementById('sup-kpi-billed').textContent = formatCurrency(billed);
+  document.getElementById('sup-kpi-paid').textContent = formatCurrency(paid);
+  document.getElementById('sup-kpi-balance').textContent = formatCurrency(balance);
+
+  const payBtn = document.getElementById('sup-detail-pay-btn');
+  if (payBtn) {
+    payBtn.onclick = () => openPayModal(supplierName, balance);
+    payBtn.style.display = balance > 0 ? 'inline-flex' : 'none';
+  }
+
+  const tbody = document.getElementById('sup-bills-tbody');
+  if (tbody) {
+    if (bills.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No bills found for this supplier.</td></tr>`;
+    } else {
+      const t = translations[currentLanguage];
+      tbody.innerHTML = bills.map(b => {
+        const valBadge = b.validation_status === 'verified'
+          ? `<span class="badge badge-success">${t.statusVerified}</span>`
+          : b.validation_status === 'approved'
+          ? `<span class="badge badge-success">${t.statusApproved}</span>`
+          : `<span class="badge badge-danger">${t.statusNeedsReview}</span>`;
+
+        const payBadge = b.payment_status === 'paid'
+          ? `<span class="badge badge-success">${t.statusPaid}</span>`
+          : b.payment_status === 'partially_paid'
+          ? `<span class="badge badge-warning">${t.statusPartial}</span>`
+          : `<span class="badge badge-danger">${t.statusUnpaid}</span>`;
+
+        return `
+          <tr>
+            <td style="font-weight: 600;"><a href="#/bills/${b.id}" style="color:var(--text-primary); text-decoration:none;">${escapeHTML(b.invoice_number || 'B-' + b.id)}</a></td>
+            <td>${escapeHTML(b.invoice_date ? b.invoice_date.split('T')[0] : '')}</td>
+            <td style="font-weight: 700;">${formatCurrency(b.total)}</td>
+            <td>${valBadge}</td>
+            <td>${payBadge}</td>
+            <td style="text-align: right;">
+              <a class="btn btn-secondary btn-sm" href="#/bills/${b.id}">Details</a>
+              ${b.payment_status !== 'paid' ? `<button class="btn btn-secondary btn-sm" onclick="openDirectPay(${b.id}, '${escapeHTML(b.vendor_name).replace(/'/g, "\\'")}', '${escapeHTML(b.invoice_number || '').replace(/'/g, "\\'")}', ${b.total - b.amount_paid})">Pay</button>` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+}
+
+function renderPaymentsWorkspace(dues) {
+  const tbody = document.getElementById('payments-tbody');
+  if (!tbody) return;
+
+  let totalDue = 0;
+  let overdueCount = 0;
+
+  dues.forEach(d => {
+    totalDue += d.balance_due;
+    if (d.is_overdue) overdueCount += d.overdue_bills;
+  });
+
+  document.getElementById('payments-total-due').textContent = formatCurrency(totalDue);
+  document.getElementById('payments-overdue-count').textContent = overdueCount;
+
+  if (dues.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted)">No outstanding supplier dues.</td></tr>`;
+    return;
+  }
+
+  const t = translations[currentLanguage];
+  tbody.innerHTML = dues.map(d => {
+    const overdueLabel = d.overdue_days > 0 ? ` (${d.overdue_days} ${t.daysOverdue})` : ` (${d.overdue_bills})`;
+    const statusBadge = d.is_overdue 
+      ? `<span class="badge badge-danger">${t.statusOverdue}${overdueLabel}</span>`
+      : `<span class="badge badge-success">${t.statusOk}</span>`;
+    const dueDateStr = d.earliest_due ? d.earliest_due.split('T')[0] : 'N/A';
+
+    return `
+      <tr>
+        <td style="font-weight:600;"><a href="#/suppliers/${encodeURIComponent(d.supplier_name)}" style="color:var(--text-primary); text-decoration:none;">${escapeHTML(d.supplier_name)}</a></td>
+        <td>${formatCurrency(d.total_billed)}</td>
+        <td>${formatCurrency(d.total_paid)}</td>
+        <td style="color:${d.balance_due > 0 ? 'var(--rose-primary)' : 'var(--emerald-primary)'}; font-weight:700;">${formatCurrency(d.balance_due)}</td>
+        <td>${escapeHTML(dueDateStr)}</td>
+        <td>${statusBadge}</td>
+        <td style="text-align: right;">
+          ${d.balance_due > 0 ? `<button class="btn btn-emerald btn-sm" onclick="openPayModal('${escapeHTML(d.supplier_name).replace(/'/g, "\\'")}', ${d.balance_due})">${escapeHTML(t.btnPay)}</button>` : '—'}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderPriceIntelWorkspace(alerts) {
+  const container = document.getElementById('price-intel-alerts-container');
+  if (!container) return;
+  renderAlerts(alerts);
+  // Also populate the price-intel page container
+  const mainAlerts = document.getElementById('alerts-container');
+  if (mainAlerts && container) {
+    container.innerHTML = mainAlerts.innerHTML;
+  }
+}
+
+function renderReportsWorkspace(bills) {
+  const chartContainer = document.getElementById('reports-trend-chart');
+  const suppliersContainer = document.getElementById('reports-suppliers-list');
+  if (!chartContainer || !suppliersContainer) return;
+
+  const mainChart = document.getElementById('monthly-trend-chart');
+  const mainSuppliers = document.getElementById('top-suppliers-list');
+  if (mainChart) chartContainer.innerHTML = mainChart.innerHTML;
+  if (mainSuppliers) suppliersContainer.innerHTML = mainSuppliers.innerHTML;
 }

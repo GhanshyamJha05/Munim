@@ -23,31 +23,41 @@
 
       <nav class="sidebar-nav">
         <div class="nav-section-label">General</div>
-        <a class="nav-item active" href="#dashboard-section">
+        <a class="nav-item active" href="#/dashboard" data-route="dashboard">
           <span class="nav-icon">📊</span>
-          <span>Overview</span>
+          <span id="t-nav-overview">Overview</span>
         </a>
-        <a class="nav-item" href="#analytics-section">
-          <span class="nav-icon">📈</span>
-          <span>Analytics & Reports</span>
+        <a class="nav-item" href="#/bills" data-route="bills">
+          <span class="nav-icon">📑</span>
+          <span id="t-nav-bills">Bills & Invoices</span>
         </a>
-        <a class="nav-item" href="#upload-section">
+        <a class="nav-item" href="#/bills/upload" data-route="upload">
           <span class="nav-icon">📸</span>
-          <span>Upload Invoices</span>
+          <span id="t-nav-upload">Upload Invoices</span>
         </a>
         
         <div class="nav-section-label">Accounts</div>
-        <a class="nav-item" href="#dues-section">
+        <a class="nav-item" href="#/suppliers" data-route="suppliers">
           <span class="nav-icon">🤝</span>
-          <span>Supplier Dues</span>
+          <span id="t-nav-suppliers">Suppliers</span>
         </a>
-        <a class="nav-item" href="#alerts-section">
+        <a class="nav-item" href="#/payments" data-route="payments">
+          <span class="nav-icon">💳</span>
+          <span id="t-nav-payments">Payments</span>
+        </a>
+        <a class="nav-item" href="#/price-intelligence" data-route="price-intel">
           <span class="nav-icon">⚡</span>
-          <span>Price Intelligence</span>
+          <span id="t-nav-price-intel">Price Intelligence</span>
         </a>
-        <a class="nav-item" href="#ledger-section">
-          <span class="nav-icon">📑</span>
-          <span>Bills Ledger</span>
+        <a class="nav-item" href="#/reports" data-route="reports">
+          <span class="nav-icon">📈</span>
+          <span id="t-nav-reports">Reports & Analytics</span>
+        </a>
+
+        <div class="nav-section-label">System</div>
+        <a class="nav-item" href="#/settings" data-route="settings">
+          <span class="nav-icon">⚙️</span>
+          <span id="t-nav-settings">Settings</span>
         </a>
       </nav>
 
@@ -92,171 +102,519 @@
         </div>
       </header>
 
-      <main class="page-content" id="dashboard-section">
-        <!-- Stripe-grade KPI Overview Row -->
-        <div class="metrics-row">
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <span class="kpi-label" id="t-monthly-spend">Monthly Spend</span>
-              <input type="month" id="spend-month-picker" class="form-select" style="padding: 2px 6px; font-size: 0.72rem;">
+      <main class="page-content">
+        <!-- 1. OVERVIEW WORKSPACE: #/dashboard -->
+        <div class="app-view active" id="view-dashboard">
+          <!-- KPI Overview Row -->
+          <div class="metrics-row">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="t-monthly-spend">Monthly Spend</span>
+                <input type="month" id="spend-month-picker" class="form-select" style="padding: 2px 6px; font-size: 0.72rem;">
+              </div>
+              <div class="kpi-value" id="val-monthly-spend">₹0.00</div>
+              <div class="kpi-footer">
+                <span id="val-bills-count">0 bills processed</span>
+              </div>
             </div>
-            <div class="kpi-value" id="val-monthly-spend">₹0.00</div>
-            <div class="kpi-footer">
-              <span id="val-bills-count">0 bills processed</span>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="t-open-alerts">Price Alerts</span>
+                <span class="kpi-icon">⚡</span>
+              </div>
+              <div class="kpi-value" id="val-alerts-count">0</div>
+              <div class="kpi-footer">
+                <span id="t-price-spikes">Price spikes & savings</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="t-total-dues">Supplier Dues</span>
+                <span class="kpi-icon">🤝</span>
+              </div>
+              <div class="kpi-value" id="val-dues-amount">₹0.00</div>
+              <div class="kpi-footer">
+                <span id="val-overdue-sub">0 overdue bills</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label" id="t-needs-review">Needs Review</span>
+                <span class="kpi-icon">⚠️</span>
+              </div>
+              <div class="kpi-value" id="val-review-count">0</div>
+              <div class="kpi-footer">
+                <span id="t-review-sub">Low confidence or math errors</span>
+              </div>
             </div>
           </div>
 
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <span class="kpi-label" id="t-open-alerts">Price Alerts</span>
-              <span class="kpi-icon">⚡</span>
+          <!-- Purchase Analytics Trend & Top Suppliers -->
+          <section class="section-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>📈</span> <span>Purchase Analytics & Spend Distribution</span>
+              </div>
+              <a href="#/reports" class="btn btn-secondary btn-sm">Full Analytics →</a>
             </div>
-            <div class="kpi-value" id="val-alerts-count">0</div>
-            <div class="kpi-footer">
-              <span id="t-price-spikes">Price spikes & savings</span>
+            <div class="analytics-grid">
+              <div style="padding: 16px; border-right: 1px solid var(--border-light);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Monthly Purchase Trend</span>
+                  <span style="font-size: 0.74rem; color: var(--text-muted);">Last 6 Months (₹)</span>
+                </div>
+                <div class="chart-bars-container" id="monthly-trend-chart"></div>
+              </div>
+              <div>
+                <div style="padding: 16px 16px 8px; border-bottom: 1px solid var(--border-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">
+                  Top Suppliers by Volume
+                </div>
+                <div class="supplier-spend-list" id="top-suppliers-list"></div>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <span class="kpi-label" id="t-total-dues">Supplier Dues</span>
-              <span class="kpi-icon">🤝</span>
+          <!-- Quick Actions & Active Alerts -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="section-panel">
+              <div class="panel-header">
+                <div class="panel-title"><span>⚡</span> <span id="t-alerts-title">Price-Change Alerts</span></div>
+                <a href="#/price-intelligence" class="btn btn-secondary btn-sm">View All →</a>
+              </div>
+              <div class="alerts-list" id="alerts-container">
+                <div style="color: var(--text-muted); font-size: 0.85rem; padding: 6px 0;" id="t-no-alerts">No active price alerts. All supplier rates are stable.</div>
+              </div>
             </div>
-            <div class="kpi-value" id="val-dues-amount">₹0.00</div>
-            <div class="kpi-footer">
-              <span id="val-overdue-sub">0 overdue bills</span>
-            </div>
-          </div>
 
-          <div class="kpi-card">
-            <div class="kpi-top">
-              <span class="kpi-label" id="t-needs-review">Needs Review</span>
-              <span class="kpi-icon">⚠️</span>
-            </div>
-            <div class="kpi-value" id="val-review-count">0</div>
-            <div class="kpi-footer">
-              <span id="t-review-sub">Low confidence or math errors</span>
+            <div class="upload-card" style="padding: 24px; justify-content: center;" onclick="window.location.hash='#/bills/upload'">
+              <div class="upload-icon-circle">📸</div>
+              <div class="upload-text" style="font-size: 1rem;">Fast Bill Capture</div>
+              <div class="upload-hint" style="margin-bottom: 12px;">Take a photo or upload invoice with local Gemma AI.</div>
+              <a href="#/bills/upload" class="btn btn-primary" onclick="event.stopPropagation()">Open Scanner →</a>
             </div>
           </div>
         </div>
 
-        <!-- Purchase Analytics (Interactive Visual Chart & Supplier Spend) -->
-        <section class="section-panel" id="analytics-section">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span>📈</span> <span>Purchase Analytics & Spend Distribution</span>
-            </div>
-          </div>
-          <div class="analytics-grid">
-            <div style="padding: 16px; border-right: 1px solid var(--border-light);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Monthly Purchase Trend</span>
-                <span style="font-size: 0.74rem; color: var(--text-muted);">Last 6 Months (₹)</span>
-              </div>
-              <div class="chart-bars-container" id="monthly-trend-chart">
-                <!-- Dynamically rendered bars -->
-              </div>
-            </div>
+        <!-- 2. BILLS & INVOICES WORKSPACE: #/bills -->
+        <div class="app-view" id="view-bills">
+          <div class="page-header-row">
             <div>
-              <div style="padding: 16px 16px 8px; border-bottom: 1px solid var(--border-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">
-                Top Suppliers by Volume
-              </div>
-              <div class="supplier-spend-list" id="top-suppliers-list">
-                <!-- Dynamically rendered supplier share -->
-              </div>
+              <div class="page-intro-title" id="p-bills-title">Bills & Invoices Ledger</div>
+              <div class="page-intro-sub">Comprehensive digital purchase diary and GST expense records</div>
             </div>
-          </div>
-        </section>
-
-        <!-- Bill Ingestion / Dropzone Panel -->
-        <section id="upload-section">
-          <div class="upload-card" id="drop-zone">
-            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/jpg" capture="environment" style="display: none;">
-            <div class="upload-icon-circle">🧾</div>
-            <div class="upload-text" id="t-upload-title">Photograph or Upload Supplier Invoices</div>
-            <div class="upload-hint" id="t-upload-sub">Take a photo from your phone or drop a supplier bill here. Local vision AI extracts items in seconds.</div>
-            <div class="upload-actions-bar">
-              <button class="btn btn-primary btn-large" onclick="document.getElementById('file-input').click()">
-                <span>📸</span> <span id="t-upload-btn">Upload / Capture Bill</span>
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Price Change Alerts Panel -->
-        <section class="section-panel" id="alerts-section">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span>⚡</span> <span id="t-alerts-title">Price-Change Alerts</span>
-              <span class="badge badge-warning" id="alerts-badge">0 Active</span>
-            </div>
-          </div>
-          <div class="alerts-list" id="alerts-container">
-            <div style="color: var(--text-muted); font-size: 0.85rem; padding: 6px 0;" id="t-no-alerts">No active price alerts. All supplier rates are stable.</div>
-          </div>
-        </section>
-
-        <!-- Supplier Dues & Outstanding Balances Panel -->
-        <section class="section-panel" id="dues-section">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span>🤝</span> <span id="t-dues-title">Supplier Dues & Outstanding</span>
-            </div>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th id="th-supplier">Supplier Name</th>
-                  <th id="th-total-billed">Total Billed</th>
-                  <th id="th-total-paid">Total Paid</th>
-                  <th id="th-balance-due">Balance Due</th>
-                  <th id="th-earliest-due">Due Date</th>
-                  <th id="th-status">Status</th>
-                  <th id="th-action" style="text-align: right;">Action</th>
-                </tr>
-              </thead>
-              <tbody id="dues-tbody">
-                <tr><td colspan="7" style="text-align:center; color:var(--text-muted)" id="t-no-dues">No outstanding supplier dues.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Bills Ledger & CA Pack Export Panel -->
-        <section class="section-panel" id="ledger-section">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span>📑</span> <span id="t-ledger-title">Invoices & Bills Ledger</span>
-            </div>
-            <div class="panel-actions">
-              <select id="ledger-month-filter" class="form-select">
-                <option value="ALL">All Invoices / सभी बिल</option>
-              </select>
-              <input type="month" id="export-month" class="form-select">
+            <div style="display: flex; gap: 8px;">
+              <a href="#/bills/upload" class="btn btn-primary">📸 Upload Bill</a>
               <a id="ca-pack-btn" href="/api/export/ca" class="btn btn-secondary"><span id="t-btn-ca-pack">📥 CA Pack CSV</span></a>
               <a id="tally-btn" href="/api/export/tally" class="btn btn-secondary"><span id="t-btn-tally">📊 Tally CSV</span></a>
             </div>
           </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th id="th-inv-no">Bill #</th>
-                  <th id="th-inv-date">Date</th>
-                  <th id="th-inv-supplier">Supplier</th>
-                  <th id="th-inv-total">Amount</th>
-                  <th id="th-inv-val">Validation</th>
-                  <th id="th-inv-payment">Payment</th>
-                  <th id="th-inv-actions" style="text-align: right;">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="bills-tbody">
-                <tr><td colspan="7" style="text-align:center; color:var(--text-muted)" id="t-no-bills">No bills uploaded yet.</td></tr>
-              </tbody>
-            </table>
+
+          <section class="section-panel">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 260px;">
+                <input type="text" id="bills-search-input" class="form-input" placeholder="Search supplier or invoice number..." style="flex: 1; max-width: 320px;">
+                <select id="bills-status-filter" class="form-select">
+                  <option value="ALL">All Statuses / सभी स्थिति</option>
+                  <option value="verified">Verified / सत्यापित</option>
+                  <option value="approved">Approved / स्वीकृत</option>
+                  <option value="needs_review">Needs Review / जांचें</option>
+                  <option value="unpaid">Unpaid / बाकी</option>
+                  <option value="paid">Paid / चुकता</option>
+                </select>
+              </div>
+              <div class="panel-actions">
+                <select id="ledger-month-filter" class="form-select">
+                  <option value="ALL">All Invoices / सभी बिल</option>
+                </select>
+                <input type="month" id="export-month" class="form-select">
+              </div>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th id="th-inv-no">Bill #</th>
+                    <th id="th-inv-date">Date</th>
+                    <th id="th-inv-supplier">Supplier</th>
+                    <th id="th-inv-total">Amount</th>
+                    <th id="th-inv-val">Validation</th>
+                    <th id="th-inv-payment">Payment</th>
+                    <th id="th-inv-actions" style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bills-tbody">
+                  <tr><td colspan="7" style="text-align:center; color:var(--text-muted)" id="t-no-bills">No bills uploaded yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- 3. BILL UPLOAD WORKSPACE: #/bills/upload -->
+        <div class="app-view" id="view-upload">
+          <div class="page-header-row">
+            <div>
+              <div class="page-intro-title">Photograph or Upload Supplier Invoices</div>
+              <div class="page-intro-sub">Private, on-device OCR using local Gemma 3. Zero cloud API calls.</div>
+            </div>
+            <a href="#/bills" class="btn btn-secondary">← View Ledger</a>
           </div>
-        </section>
+
+          <div class="upload-card" id="drop-zone" style="padding: 48px 24px;">
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/jpg" capture="environment" style="display: none;">
+            <div class="upload-icon-circle" style="width: 68px; height: 68px; font-size: 2rem;">🧾</div>
+            <div class="upload-text" style="font-size: 1.25rem;" id="t-upload-title">Photograph or Upload Supplier Invoices</div>
+            <div class="upload-hint" style="font-size: 0.9rem;" id="t-upload-sub">Take a photo from your phone or drop a supplier bill here. Local vision AI extracts items in seconds.</div>
+            <div class="upload-actions-bar" style="margin-top: 8px;">
+              <button class="btn btn-primary btn-large" onclick="document.getElementById('file-input').click()">
+                <span>📸</span> <span id="t-upload-btn">Upload / Capture Bill</span>
+              </button>
+              <button class="btn btn-secondary btn-large" id="upload-qr-btn">
+                <span>📱</span> <span>Phone QR Camera</span>
+              </button>
+            </div>
+            <div style="margin-top: 20px; font-size: 0.76rem; color: var(--text-muted);">
+              Supported formats: JPG, PNG, WEBP (Max: 20MB) • Private on-device extraction
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. BILL DETAILS WORKSPACE: #/bills/:id -->
+        <div class="app-view" id="view-bill-details">
+          <div class="page-header-row">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <a href="#/bills" class="btn btn-secondary btn-sm">← Back</a>
+              <div>
+                <div class="page-intro-title" id="detail-bill-heading">Bill Details</div>
+                <div class="page-intro-sub" id="detail-bill-sub">Invoice information & validation summary</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;" id="detail-bill-actions">
+              <!-- Dynamically populated edit/pay actions -->
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header-meta">
+              <div class="meta-box">
+                <span class="meta-label">Supplier</span>
+                <span class="meta-value" id="detail-supplier-name">—</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">GSTIN</span>
+                <span class="meta-value cell-mono" id="detail-supplier-gstin">—</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Invoice Number</span>
+                <span class="meta-value cell-mono" id="detail-inv-number">—</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Invoice Date</span>
+                <span class="meta-value" id="detail-inv-date">—</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Total Amount</span>
+                <span class="meta-value" style="font-size: 1.25rem; color: var(--text-primary);" id="detail-inv-total">₹0.00</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Validation Status</span>
+                <span class="meta-value" id="detail-val-badge">—</span>
+              </div>
+            </div>
+
+            <!-- Line items container -->
+            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: var(--text-primary);">Line Items</div>
+            <div class="table-container" style="border: 1px solid var(--border-light); border-radius: var(--radius-sm); margin-bottom: 24px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>HSN</th>
+                    <th>Pack</th>
+                    <th style="text-align: right;">Qty</th>
+                    <th style="text-align: right;">Unit Price (₹)</th>
+                    <th style="text-align: right;">GST %</th>
+                    <th style="text-align: right;">Taxable (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="detail-items-tbody"></tbody>
+              </table>
+            </div>
+
+            <!-- Tax and arithmetic breakdown -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div style="background: var(--bg-subtle); padding: 16px; border-radius: var(--radius-sm);">
+                <div style="font-weight: 700; font-size: 0.86rem; margin-bottom: 8px;">Tax & Rounding Breakdown</div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                  <span>Subtotal:</span><span id="detail-subtotal">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                  <span>CGST:</span><span id="detail-cgst">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                  <span>SGST:</span><span id="detail-sgst">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                  <span>IGST:</span><span id="detail-igst">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                  <span>Round Off:</span><span id="detail-roundoff">₹0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1rem; border-top: 1px solid var(--border-light); padding-top: 6px; margin-top: 6px;">
+                  <span>Grand Total:</span><span id="detail-grandtotal">₹0.00</span>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-weight: 700; font-size: 0.86rem; margin-bottom: 8px;">Original Invoice Scan</div>
+                <div style="border: 1px solid var(--border-light); border-radius: var(--radius-sm); overflow: hidden; max-height: 220px; display: flex; justify-content: center; background: #000;">
+                  <img id="detail-bill-img" src="" alt="Invoice Scan" style="max-height: 220px; object-fit: contain;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. SUPPLIERS WORKSPACE: #/suppliers -->
+        <div class="app-view" id="view-suppliers">
+          <div class="page-header-row">
+            <div>
+              <div class="page-intro-title">Supplier Directory & Ledger</div>
+              <div class="page-intro-sub">Track total purchases, outstanding balances, and payment status per supplier</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="suppliers-search-input" class="form-input" placeholder="Search suppliers..." style="width: 240px;">
+            </div>
+          </div>
+
+          <section class="section-panel">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th id="th-supplier">Supplier Name</th>
+                    <th id="th-total-billed">Total Billed</th>
+                    <th id="th-total-paid">Total Paid</th>
+                    <th id="th-balance-due">Balance Due</th>
+                    <th id="th-earliest-due">Due Date</th>
+                    <th id="th-status">Status</th>
+                    <th id="th-action" style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dues-tbody">
+                  <tr><td colspan="7" style="text-align:center; color:var(--text-muted)" id="t-no-dues">No outstanding supplier dues.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- 6. SUPPLIER DETAILS WORKSPACE: #/suppliers/:name -->
+        <div class="app-view" id="view-supplier-details">
+          <div class="page-header-row">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <a href="#/suppliers" class="btn btn-secondary btn-sm">← Back</a>
+              <div>
+                <div class="page-intro-title" id="sup-detail-name">Supplier Profile</div>
+                <div class="page-intro-sub" id="sup-detail-sub">Purchase and payment ledger</div>
+              </div>
+            </div>
+            <button class="btn btn-emerald" id="sup-detail-pay-btn">💳 Record Payment</button>
+          </div>
+
+          <div class="metrics-row" style="margin-bottom: 20px;">
+            <div class="kpi-card">
+              <span class="kpi-label">Total Purchased</span>
+              <div class="kpi-value" id="sup-kpi-billed">₹0.00</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Total Paid</span>
+              <div class="kpi-value" style="color: var(--emerald-primary);" id="sup-kpi-paid">₹0.00</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Balance Due</span>
+              <div class="kpi-value" style="color: var(--rose-primary);" id="sup-kpi-balance">₹0.00</div>
+            </div>
+          </div>
+
+          <section class="section-panel">
+            <div class="panel-header">
+              <div class="panel-title"><span>📑</span> <span>Bills From This Supplier</span></div>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Bill #</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Validation</th>
+                    <th>Payment</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="sup-bills-tbody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- 7. PAYMENTS WORKSPACE: #/payments -->
+        <div class="app-view" id="view-payments">
+          <div class="page-header-row">
+            <div>
+              <div class="page-intro-title">Supplier Dues & Payment Records</div>
+              <div class="page-intro-sub">Manage payments, FIFO invoice settlement, and due dates</div>
+            </div>
+          </div>
+
+          <div class="metrics-row" style="margin-bottom: 20px;">
+            <div class="kpi-card">
+              <span class="kpi-label">Total Dues Across Suppliers</span>
+              <div class="kpi-value" id="payments-total-due">₹0.00</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Overdue Bills</span>
+              <div class="kpi-value" style="color: var(--rose-primary);" id="payments-overdue-count">0</div>
+            </div>
+          </div>
+
+          <section class="section-panel">
+            <div class="panel-header">
+              <div class="panel-title"><span>🤝</span> <span>Outstanding Supplier Balances</span></div>
+            </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Supplier Name</th>
+                    <th>Total Billed</th>
+                    <th>Total Paid</th>
+                    <th>Balance Due</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="payments-tbody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- 8. PRICE INTELLIGENCE WORKSPACE: #/price-intelligence -->
+        <div class="app-view" id="view-price-intel">
+          <div class="page-header-row">
+            <div>
+              <div class="page-intro-title">Price Intelligence & Savings</div>
+              <div class="page-intro-sub">Track purchase price variances across suppliers and spot margin opportunities</div>
+            </div>
+          </div>
+
+          <section class="section-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>⚡</span> <span>Active Price Change Alerts</span>
+                <span class="badge badge-warning" id="alerts-badge">0 Active</span>
+              </div>
+            </div>
+            <div class="alerts-list" id="price-intel-alerts-container"></div>
+          </section>
+        </div>
+
+        <!-- 9. REPORTS WORKSPACE: #/reports -->
+        <div class="app-view" id="view-reports">
+          <div class="page-header-row">
+            <div>
+              <div class="page-intro-title">Reports & CA Accounting Pack</div>
+              <div class="page-intro-sub">Audit-ready purchase reports, monthly analytics, and CSV exports</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a href="/api/export/ca" class="btn btn-secondary">📥 CA Pack CSV</a>
+              <a href="/api/export/tally" class="btn btn-secondary">📊 Tally CSV</a>
+            </div>
+          </div>
+
+          <section class="section-panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+              <div class="panel-title"><span>📈</span> <span>Monthly Purchasing Trends</span></div>
+            </div>
+            <div class="analytics-grid">
+              <div style="padding: 16px; border-right: 1px solid var(--border-light);">
+                <div class="chart-bars-container" id="reports-trend-chart"></div>
+              </div>
+              <div>
+                <div style="padding: 16px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border-light);">
+                  Top Volume Suppliers
+                </div>
+                <div class="supplier-spend-list" id="reports-suppliers-list"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 10. SETTINGS WORKSPACE: #/settings -->
+        <div class="app-view" id="view-settings">
+          <div class="page-header-row">
+            <div>
+              <div class="page-intro-title">Settings & System Preferences</div>
+              <div class="page-intro-sub">Application configuration, language, AI model, and network setup</div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-row">
+              <div>
+                <div class="settings-label" id="lbl-theme-pref">Visual Theme</div>
+                <div class="settings-desc">Choose between Clean Light, Dark, or Warm Traditional Bahi-Khata</div>
+              </div>
+              <select id="settings-theme-select" class="form-select">
+                <option value="light">☀️ Light</option>
+                <option value="dark">🌙 Dark</option>
+                <option value="warm">📜 Warm Bahi-Khata</option>
+              </select>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label" id="lbl-lang-pref">Language / भाषा</div>
+                <div class="settings-desc">Switch application between English and हिन्दी</div>
+              </div>
+              <button class="btn btn-secondary" id="settings-lang-toggle">English / हिन्दी</button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label" id="lbl-model-pref">Local Vision AI Model</div>
+                <div class="settings-desc">Configured on-device Gemma 3 parameter variant</div>
+              </div>
+              <select id="settings-model-select" class="form-select">
+                <option value="gemma3:12b">Gemma 3 12B (Default)</option>
+                <option value="gemma3:4b">Gemma 3 4B (Low RAM)</option>
+                <option value="gemma3:27b">Gemma 3 27B (High Accuracy)</option>
+              </select>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label" id="lbl-mobile-access">Phone Camera QR Access</div>
+                <div class="settings-desc">Connect mobile devices on the same Wi-Fi network without passwords</div>
+              </div>
+              <button class="btn btn-secondary" id="settings-qr-btn">📱 Show QR Code</button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label" id="lbl-system-info">System & Privacy Guarantee</div>
+                <div class="settings-desc" id="lbl-local-notice">100% on-device private AI accounting running locally on this machine.</div>
+              </div>
+              <span class="badge badge-success">Local SQLite + Ollama</span>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
