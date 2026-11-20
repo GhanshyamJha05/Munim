@@ -115,6 +115,7 @@
   background: #f8fafc;
   color: #0f172a;
 }
+
 [data-theme="dark"] .btn-primary:hover {
   background: #e2e8f0;
 }
@@ -186,6 +187,7 @@
   background: #b45309;
   color: #ffffff;
 }
+
 [data-theme="warm"] .btn-primary:hover {
   background: #92400e;
 }
@@ -432,6 +434,7 @@ body {
   color: var(--text-inverse);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
+
 .btn-primary:hover {
   background: #1e293b;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
@@ -444,6 +447,7 @@ body {
   color: var(--text-secondary);
   box-shadow: var(--shadow-xs);
 }
+
 .btn-secondary:hover {
   background: var(--bg-subtle);
   border-color: var(--border-subtle);
@@ -456,6 +460,7 @@ body {
   color: #ffffff;
   box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
 }
+
 .btn-emerald:hover {
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
@@ -606,6 +611,7 @@ body {
   color: var(--text-muted);
   margin-top: 2px;
 }
+
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -708,7 +714,8 @@ body {
   position: relative;
 }
 
-.upload-card:hover, .upload-card.dragover {
+.upload-card:hover,
+.upload-card.dragover {
   border-color: var(--emerald-primary);
   background: var(--emerald-bg);
   box-shadow: var(--shadow-md), 0 8px 24px -4px rgba(16, 185, 129, 0.12);
@@ -799,7 +806,8 @@ body {
 }
 
 /* Filter controls */
-.form-select, .form-input {
+.form-select,
+.form-input {
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
@@ -810,7 +818,8 @@ body {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.form-select:focus, .form-input:focus {
+.form-select:focus,
+.form-input:focus {
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
@@ -863,11 +872,35 @@ body {
   gap: 4px;
 }
 
-.badge-success { background: var(--emerald-bg); color: var(--emerald-text); border: 1px solid var(--emerald-border); }
-.badge-warning { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
-.badge-danger { background: var(--rose-bg); color: var(--rose-text); border: 1px solid var(--rose-border); }
-.badge-neutral { background: var(--bg-subtle); color: var(--text-secondary); border: 1px solid var(--border-light); }
-.badge-blue { background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue-border); }
+.badge-success {
+  background: var(--emerald-bg);
+  color: var(--emerald-text);
+  border: 1px solid var(--emerald-border);
+}
+
+.badge-warning {
+  background: var(--amber-bg);
+  color: var(--amber-text);
+  border: 1px solid var(--amber-border);
+}
+
+.badge-danger {
+  background: var(--rose-bg);
+  color: var(--rose-text);
+  border: 1px solid var(--rose-border);
+}
+
+.badge-neutral {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+}
+
+.badge-blue {
+  background: var(--blue-bg);
+  color: var(--blue-text);
+  border: 1px solid var(--blue-border);
+}
 
 /* Data Tables */
 .table-container {
@@ -881,7 +914,8 @@ table {
   text-align: left;
 }
 
-th, td {
+th,
+td {
   padding: 14px 22px;
   border-bottom: 1px solid var(--border-light);
   font-size: 0.85rem;
@@ -1036,7 +1070,8 @@ tbody tr:hover td {
   transition: all 0.15s;
 }
 
-.quick-filter-pill.active, .quick-filter-pill:hover {
+.quick-filter-pill.active,
+.quick-filter-pill:hover {
   background: var(--text-primary);
   color: var(--text-inverse);
   border-color: var(--text-primary);
@@ -1101,6 +1136,7 @@ tbody tr:hover td {
   cursor: pointer;
   line-height: 1;
 }
+
 .close-btn:hover {
   color: var(--text-primary);
 }
@@ -1203,7 +1239,8 @@ tbody tr:hover td {
   opacity: 0.9;
 }
 
-.items-table th, .items-table td {
+.items-table th,
+.items-table td {
   padding: 6px 10px;
   font-size: 0.8rem;
 }
@@ -1220,7 +1257,9 @@ tbody tr:hover td {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Mobile Sidebar Backdrop */
@@ -1251,6 +1290,7 @@ tbody tr:hover td {
   .metrics-row {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .app-sidebar {
     width: 220px;
   }
@@ -1304,7 +1344,8 @@ tbody tr:hover td {
     grid-template-columns: 1fr;
   }
 
-  .form-grid-2, .form-grid-3 {
+  .form-grid-2,
+  .form-grid-3 {
     grid-template-columns: 1fr;
   }
 }
