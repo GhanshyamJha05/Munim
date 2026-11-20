@@ -213,6 +213,7 @@ const translations = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  setupThemeToggle();
   setupLanguageToggle();
   setupSettings();
   setupUpload();
@@ -220,6 +221,22 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMonthPickers();
   loadDashboard();
 });
+
+function setupThemeToggle() {
+  const themeSelect = document.getElementById('theme-select');
+  if (!themeSelect) return;
+
+  // Read saved theme from localStorage, default to 'light'
+  const savedTheme = localStorage.getItem('munim_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  themeSelect.value = savedTheme;
+
+  themeSelect.addEventListener('change', (e) => {
+    const newTheme = e.target.value;
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('munim_theme', newTheme);
+  });
+}
 
 function setupSettings() {
   const sel = document.getElementById('model-select');

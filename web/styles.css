@@ -1,5 +1,5 @@
 :root {
-  /* Warm off-white canvas and pure white cards (Linear & Stripe aesthetic) */
+  /* Default: Clean Financial Light Theme (Stripe/Linear) */
   --bg-app: #f8fafc;
   --bg-sidebar: #0f172a;
   --bg-surface: #ffffff;
@@ -13,7 +13,7 @@
   --border-strong: #94a3b8;
   --border-focus: #2563eb;
 
-  /* Typography: Deep Charcoal & Slate (High Legibility) */
+  /* Typography: Deep Charcoal & Slate */
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-muted: #64748b;
@@ -54,6 +54,145 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
   --shadow-overlay: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   THEME 2: SLATE DARK (Professional Midnight Accounting Ledger)
+   ========================================================================== */
+[data-theme="dark"] {
+  --bg-app: #090d16;
+  --bg-sidebar: #060910;
+  --bg-surface: #111827;
+  --bg-surface-elevated: #162032;
+  --bg-subtle: #1a2436;
+  --bg-active: #243247;
+
+  --border-light: #1f2c3f;
+  --border-subtle: #2d3e58;
+  --border-strong: #4b6285;
+  --border-focus: #3b82f6;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #8395ad;
+  --text-tertiary: #5d6f85;
+  --text-inverse: #090d16;
+
+  --emerald-primary: #10b981;
+  --emerald-hover: #059669;
+  --emerald-bg: rgba(16, 185, 129, 0.12);
+  --emerald-border: rgba(16, 185, 129, 0.28);
+  --emerald-text: #34d399;
+
+  --amber-primary: #f59e0b;
+  --amber-bg: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.3);
+  --amber-text: #fbbf24;
+
+  --rose-primary: #f43f5e;
+  --rose-bg: rgba(244, 63, 94, 0.12);
+  --rose-border: rgba(244, 63, 94, 0.3);
+  --rose-text: #fda4af;
+
+  --blue-primary: #3b82f6;
+  --blue-bg: rgba(59, 130, 246, 0.12);
+  --blue-border: rgba(59, 130, 246, 0.3);
+  --blue-text: #93c5fd;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.8);
+  --shadow-overlay: 0 20px 25px -5px rgba(0, 0, 0, 0.9);
+}
+
+/* Dark mode specific tweaks */
+[data-theme="dark"] tr:hover td {
+  background-color: #162032;
+}
+
+[data-theme="dark"] .btn-primary {
+  background: #f8fafc;
+  color: #0f172a;
+}
+[data-theme="dark"] .btn-primary:hover {
+  background: #e2e8f0;
+}
+
+[data-theme="dark"] .upload-card:hover,
+[data-theme="dark"] .upload-card.dragover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] .upload-icon-circle {
+  background: #1a2436;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .alert-item {
+  background: #111827;
+}
+
+/* ==========================================================================
+   THEME 3: WARM MARIGOLD / KIRANA TRADITIONAL
+   (Inspired by traditional Indian Bahi-Khata ledger paper & marigold ink)
+   ========================================================================== */
+[data-theme="warm"] {
+  --bg-app: #fbf9f4;
+  --bg-sidebar: #1e1812;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #fffdf9;
+  --bg-subtle: #f4eee2;
+  --bg-active: #ebe0cf;
+
+  --border-light: #e8ded1;
+  --border-subtle: #d7c9b5;
+  --border-strong: #a4917b;
+  --border-focus: #b45309;
+
+  --text-primary: #291e14;
+  --text-secondary: #4a3a29;
+  --text-muted: #78644f;
+  --text-tertiary: #a18e7c;
+  --text-inverse: #ffffff;
+
+  --emerald-primary: #15803d;
+  --emerald-hover: #166534;
+  --emerald-bg: #f0fdf4;
+  --emerald-border: #bbf7d0;
+  --emerald-text: #166534;
+
+  --amber-primary: #b45309;
+  --amber-bg: #fef3c7;
+  --amber-border: #fcd34d;
+  --amber-text: #78350f;
+
+  --rose-primary: #be123c;
+  --rose-bg: #fff1f2;
+  --rose-border: #fecdd3;
+  --rose-text: #9f1239;
+
+  --blue-primary: #0369a1;
+  --blue-bg: #f0f9ff;
+  --blue-border: #bae6fd;
+  --blue-text: #075985;
+}
+
+[data-theme="warm"] tr:hover td {
+  background-color: #faf6ee;
+}
+
+[data-theme="warm"] .btn-primary {
+  background: #b45309;
+  color: #ffffff;
+}
+[data-theme="warm"] .btn-primary:hover {
+  background: #92400e;
+}
+
+[data-theme="warm"] .brand-badge {
+  background: #d97706;
+  color: #fff;
 }
 
 * {
