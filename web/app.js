@@ -8,6 +8,81 @@ let cachedDues = [];
 let selectedSpendMonth = ""; // Format: YYYY-MM
 let isLiveDemoMode = false;
 
+// Ambient 3D WebGL Canvas Engine (Procedural Gold Ledger Prism)
+function initAmbient3DCanvas() {
+  const canvas = document.getElementById('munim-ambient-canvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 24;
+
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Geometric Financial Ribbon / Floating Ledger Lattice
+  const geometry = new THREE.IcosahedronGeometry(11, 2);
+  const wireframeMat = new THREE.MeshBasicMaterial({
+    color: 0xf59e0b,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.15
+  });
+  const sphere = new THREE.Mesh(geometry, wireframeMat);
+  sphere.position.set(10, -2, -5);
+  scene.add(sphere);
+
+  // Floating Particle Dust
+  const particleCount = 120;
+  const particleGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount * 3; i += 3) {
+    positions[i] = (Math.random() - 0.5) * 60;
+    positions[i + 1] = (Math.random() - 0.5) * 40;
+    positions[i + 2] = (Math.random() - 0.5) * 30;
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const particleMat = new THREE.PointsMaterial({
+    color: 0xfbbf24,
+    size: 0.25,
+    transparent: true,
+    opacity: 0.4
+  });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // Responsive Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // Cursor Reactive Motion
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  // Continuous Render Loop
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.x += 0.0015;
+    sphere.rotation.y += 0.0025;
+    particles.rotation.y -= 0.0008;
+
+    // Gentle camera drift toward mouse
+    camera.position.x += (mouseX * 2 - camera.position.x) * 0.03;
+    camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.03;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+}
+
 // Shared currency formatter using Indian digit grouping (en-IN)
 function formatCurrency(val) {
   if (typeof val !== 'number' || isNaN(val)) val = 0;
@@ -291,6 +366,7 @@ const translations = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  initAmbient3DCanvas();
   setupNavigationDrawer();
   setupRouter();
   setupThemeToggle();
@@ -399,6 +475,17 @@ function handleRoute() {
     const v = document.getElementById('view-dashboard');
     if (v) v.classList.add('active');
     if (pageTitleEl) pageTitleEl.textContent = t.titleDashboard;
+  }
+
+  // GSAP Smooth Route Transition
+  if (typeof gsap !== 'undefined') {
+    const activeView = document.querySelector('.app-view.active');
+    if (activeView) {
+      gsap.fromTo(activeView, 
+        { opacity: 0, y: 12 }, 
+        { opacity: 1, y: 0, duration: 0.28, ease: 'power2.out' }
+      );
+    }
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });

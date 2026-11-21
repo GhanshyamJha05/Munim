@@ -8,8 +8,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
-<body>
+<body data-theme="dark">
+  <!-- Cinematic Ambient 3D WebGL Canvas Layer -->
+  <div id="munim-ambient-canvas-container">
+    <canvas id="munim-ambient-canvas"></canvas>
+  </div>
   <div class="app-layout">
     <!-- Professional Linear/Stripe style Navigation Sidebar -->
     <aside class="app-sidebar">
@@ -87,9 +93,13 @@
           </span>
         </div>
         <div class="top-nav-actions">
+          <div class="header-status-pill">
+            <span class="pulse-indicator"></span>
+            <span class="engine-text">Local Gemma AI</span>
+          </div>
           <select id="theme-select" class="form-select" style="font-size: 0.78rem; font-weight: 600;">
+            <option value="dark">🌙 Dark (Luxury Gold)</option>
             <option value="light">☀️ Light</option>
-            <option value="dark">🌙 Dark</option>
             <option value="warm">📜 Warm Bahi-Khata</option>
           </select>
           <select id="model-select" class="form-select" style="font-size: 0.78rem; font-weight: 600;">
@@ -105,6 +115,33 @@
       <main class="page-content">
         <!-- 1. OVERVIEW WORKSPACE: #/dashboard -->
         <div class="app-view active" id="view-dashboard">
+          <!-- Premium Hero Showcase Banner -->
+          <div class="luxury-hero-banner">
+            <div class="hero-content">
+              <div class="hero-badge">✨ Smarter Business. Brighter Growth.</div>
+              <h2 class="hero-headline">Autonomous Retail Accounting with Local AI</h2>
+              <p class="hero-tagline">Track spending, verify GST calculations, audit supplier rates, and manage dues with 100% on-device privacy.</p>
+              <div class="hero-ctas">
+                <a href="#/bills/upload" class="btn btn-luxury-primary">📸 Scan New Bill →</a>
+                <button class="btn btn-luxury-secondary" onclick="document.getElementById('qr-btn').click()">📱 Mobile Camera Connect</button>
+              </div>
+            </div>
+            <div class="hero-metrics-summary">
+              <div class="summary-chip">
+                <span class="chip-label">AI Status</span>
+                <span class="chip-val chip-emerald">Active & Local</span>
+              </div>
+              <div class="summary-chip">
+                <span class="chip-label">Data Privacy</span>
+                <span class="chip-val">Zero Cloud Leak</span>
+              </div>
+              <div class="summary-chip">
+                <span class="chip-label">GST Compliance</span>
+                <span class="chip-val chip-gold">100% Deterministic</span>
+              </div>
+            </div>
+          </div>
+
           <!-- KPI Overview Row -->
           <div class="metrics-row">
             <div class="kpi-card">
