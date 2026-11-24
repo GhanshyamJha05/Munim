@@ -66,9 +66,14 @@ function initAmbient3DCanvas() {
     mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
   });
 
-  // Continuous Render Loop
+  // Continuous Render Loop with visibility throttling
+  let animationFrameId = null;
   function animate() {
-    requestAnimationFrame(animate);
+    if (document.hidden) {
+      animationFrameId = null;
+      return;
+    }
+    animationFrameId = requestAnimationFrame(animate);
     sphere.rotation.x += 0.0015;
     sphere.rotation.y += 0.0025;
     particles.rotation.y -= 0.0008;
@@ -80,6 +85,13 @@ function initAmbient3DCanvas() {
 
     renderer.render(scene, camera);
   }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !animationFrameId) {
+      animate();
+    }
+  });
+
   animate();
 }
 
@@ -524,50 +536,75 @@ function setupNavigationDrawer() {
 
 function setupThemeToggle() {
   const themeSelect = document.getElementById('theme-select');
+  const settingsThemeSelect = document.getElementById('settings-theme-select');
   if (!themeSelect) return;
 
-  // Read saved theme from localStorage, default to 'light'
-  const savedTheme = localStorage.getItem('munim_theme') || 'light';
+  // Read saved theme from localStorage, default to 'dark'
+  const savedTheme = localStorage.getItem('munim_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   themeSelect.value = savedTheme;
+  if (settingsThemeSelect) settingsThemeSelect.value = savedTheme;
 
-  themeSelect.addEventListener('change', (e) => {
-    const newTheme = e.target.value;
+  const applyTheme = (newTheme) => {
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('munim_theme', newTheme);
-  });
+    if (themeSelect) themeSelect.value = newTheme;
+    if (settingsThemeSelect) settingsThemeSelect.value = newTheme;
+  };
+
+  themeSelect.addEventListener('change', (e) => applyTheme(e.target.value));
+  if (settingsThemeSelect) {
+    settingsThemeSelect.addEventListener('change', (e) => applyTheme(e.target.value));
+  }
 }
 
 function setupSettings() {
   const sel = document.getElementById('model-select');
+  const settingsSel = document.getElementById('settings-model-select');
   if (!sel) return;
+
+  const syncModelUI = (val) => {
+    if (sel) sel.value = val;
+    if (settingsSel) settingsSel.value = val;
+  };
 
   fetch('/api/settings')
     .then(r => r.json())
     .then(data => {
-      if (data && data.model) sel.value = data.model;
+      if (data && data.model) syncModelUI(data.model);
     })
     .catch(() => {});
 
-  sel.addEventListener('change', () => {
+  const handleModelChange = (newVal) => {
+    if (isLiveDemoMode) {
+      syncModelUI(newVal);
+      alert(`⚡ Model ${newVal} selected (Demo simulation)`);
+      return;
+    }
     fetch('/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: sel.value })
+      body: JSON.stringify({ model: newVal })
     })
     .then(async r => {
       const data = await r.json();
       if (!r.ok || !data.success) {
         alert(data.error || "Failed to switch model");
-        if (data.model) sel.value = data.model;
+        if (data.model) syncModelUI(data.model);
         return;
       }
+      syncModelUI(data.model);
       alert(`Active model switched to ${data.model}`);
     })
     .catch(err => {
       alert("Error switching model: " + err.message);
     });
-  });
+  };
+
+  sel.addEventListener('change', () => handleModelChange(sel.value));
+  if (settingsSel) {
+    settingsSel.addEventListener('change', () => handleModelChange(settingsSel.value));
+  }
 }
 
 function setupLanguageToggle() {
@@ -1512,18 +1549,35 @@ function deleteReviewLineItem(idx) {
 }
 
 function recalculateSubtotalFromInputs() {
-  let sum = 0;
+  let subtotal = 0;
+  let computedTax = 0;
   const count = (activeReviewBill.line_items || []).length;
   for (let i = 0; i < count; i++) {
     const qEl = document.getElementById(`item-qty-${i}`);
     const rEl = document.getElementById(`item-rate-${i}`);
+    const gEl = document.getElementById(`item-gstrate-${i}`);
     if (qEl && rEl) {
       const q = parseFloat(qEl.value) || 0;
       const r = parseFloat(rEl.value) || 0;
-      sum += q * r;
+      const taxable = q * r;
+      subtotal += taxable;
+      const gRate = gEl ? (parseFloat(gEl.value) || 0) : 0;
+      computedTax += taxable * (gRate / 100);
     }
   }
-  document.getElementById('edit-subtotal').value = sum.toFixed(2);
+  document.getElementById('edit-subtotal').value = subtotal.toFixed(2);
+
+  // Auto-distribute calculated tax if current taxes are empty or zero
+  const currCgst = parseFloat(document.getElementById('edit-cgst').value) || 0;
+  const currSgst = parseFloat(document.getElementById('edit-sgst').value) || 0;
+  const currIgst = parseFloat(document.getElementById('edit-igst').value) || 0;
+  if ((currCgst + currSgst + currIgst) === 0 && computedTax > 0) {
+    // Default to Intrastate CGST + SGST
+    const halfTax = computedTax / 2;
+    document.getElementById('edit-cgst').value = halfTax.toFixed(2);
+    document.getElementById('edit-sgst').value = halfTax.toFixed(2);
+  }
+
   recalculateGrandTotal();
 }
 
@@ -1533,16 +1587,7 @@ function recalculateLineItem(idx) {
   const taxable = qty * rate;
   document.getElementById(`item-taxable-${idx}`).textContent = formatCurrency(taxable);
 
-  // Recalculate subtotal
-  let sum = 0;
-  const count = (activeReviewBill.line_items || []).length;
-  for (let i = 0; i < count; i++) {
-    const q = parseFloat(document.getElementById(`item-qty-${i}`).value) || 0;
-    const r = parseFloat(document.getElementById(`item-rate-${i}`).value) || 0;
-    sum += q * r;
-  }
-  document.getElementById('edit-subtotal').value = sum.toFixed(2);
-  recalculateGrandTotal();
+  recalculateSubtotalFromInputs();
 }
 
 function recalculateGrandTotal() {
@@ -2012,8 +2057,86 @@ function renderReportsWorkspace(bills) {
   const suppliersContainer = document.getElementById('reports-suppliers-list');
   if (!chartContainer || !suppliersContainer) return;
 
-  const mainChart = document.getElementById('monthly-trend-chart');
-  const mainSuppliers = document.getElementById('top-suppliers-list');
-  if (mainChart) chartContainer.innerHTML = mainChart.innerHTML;
-  if (mainSuppliers) suppliersContainer.innerHTML = mainSuppliers.innerHTML;
+  const dataset = (bills && bills.length > 0) ? bills : cachedBills;
+  if (!dataset || dataset.length === 0) {
+    chartContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; margin:auto;">No purchase transactions recorded yet.</div>`;
+    suppliersContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:12px;">No supplier data.</div>`;
+    return;
+  }
+
+  // Calculate Monthly Totals directly for Reports
+  const monthlyTotals = {};
+  const supplierTotals = {};
+  let overallTotal = 0;
+
+  dataset.forEach(b => {
+    if (!b.invoice_date) return;
+    const m = b.invoice_date.split('T')[0].substring(0, 7);
+    const tot = b.total || 0;
+    monthlyTotals[m] = (monthlyTotals[m] || 0) + tot;
+    overallTotal += tot;
+
+    const s = b.vendor_name || 'Other';
+    supplierTotals[s] = (supplierTotals[s] || 0) + tot;
+  });
+
+  const sortedMonths = Object.keys(monthlyTotals).sort().slice(-6);
+  if (sortedMonths.length === 0) {
+    chartContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; margin:auto;">No purchase transactions recorded yet.</div>`;
+    suppliersContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:12px;">No supplier data.</div>`;
+    return;
+  }
+
+  const maxVal = Math.max(...sortedMonths.map(m => monthlyTotals[m]), 1);
+  const monthNames = {
+    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+    '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug',
+    '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'
+  };
+
+  chartContainer.innerHTML = sortedMonths.map(m => {
+    const val = monthlyTotals[m];
+    const pct = Math.max(12, Math.min(100, Math.round((val / maxVal) * 100)));
+    const parts = m.split('-');
+    const monthNum = parts[1] || '';
+    const monthLabel = monthNames[monthNum] || monthNum;
+    const yearLabel = parts[0] ? `'${parts[0].slice(2)}` : '';
+    const formattedAmt = val >= 100000 
+      ? `₹${(val / 100000).toFixed(1)}L` 
+      : val >= 1000 
+      ? `₹${Math.round(val / 1000)}k` 
+      : `₹${Math.round(val)}`;
+
+    return `
+      <div class="chart-bar-col" title="${monthLabel} ${parts[0]}: ${formatCurrency(val)}">
+        <span class="chart-bar-val">${formattedAmt}</span>
+        <div class="chart-bar-track">
+          <div class="chart-bar-fill" style="height: ${pct}%;"></div>
+        </div>
+        <div class="chart-bar-labels-group">
+          <span class="chart-bar-month">${monthLabel}</span>
+          <span class="chart-bar-year">${yearLabel}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const topSuppliers = Object.entries(supplierTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+
+  suppliersContainer.innerHTML = topSuppliers.map(([name, amt]) => {
+    const pct = overallTotal > 0 ? Math.round((amt / overallTotal) * 100) : 0;
+    return `
+      <div class="supplier-spend-item">
+        <div class="supplier-spend-meta">
+          <span class="supplier-spend-name">${escapeHTML(name)}</span>
+          <span class="supplier-spend-amount">${formatCurrency(amt)} <span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">(${pct}%)</span></span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: ${pct}%;"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }

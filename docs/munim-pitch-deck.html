@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मुनीम (Munim) — Field Notebook Pitch Deck</title>
+
+    <!-- Google Fonts: Space Grotesk, Caveat, DM Mono, Rozha One (Devanagari title) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Rozha+One&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           PIN & PAPER DESIGN SYSTEM TOKENS
+           Yellow legal pad, cobalt ink, pinned cards
+           =========================================== */
+        :root {
+            --paper: #EFE56A;
+            --paper-2: #F5ECA0;
+            --paper-3: #E8D85A;
+            --paper-extra: #FBE6A4;
+            --cream: #F8F1D6;
+            --kraft: #C9A66B;
+            --ink: #1F3A8A;
+            --ink-soft: #2D4FB8;
+            --ink-line: #3457C4;
+            --ink-deep: #0E1430;
+            --red: #C2342B;
+            --olive: #6B7A2E;
+            --orange: #D8702A;
+
+            --font-display: 'Space Grotesk', -apple-system, sans-serif;
+            --font-script: 'Caveat', cursive;
+            --font-mono: 'DM Mono', monospace;
+            --font-devanagari: 'Rozha One', serif;
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           FIXED 16:9 STAGE BASE (viewport-base.css)
+           =========================================== */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #14170D;
+            font-family: var(--font-display);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .deck-viewport {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            background: #14170D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .deck-stage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            transform-origin: 0 0;
+            background: var(--paper);
+        }
+
+        /* Slide Surface with Yellow Pad Lighting & Subtle Grid Lines */
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(120% 90% at 20% 10%, rgba(255,255,255,.24), transparent 60%),
+                radial-gradient(140% 100% at 80% 95%, rgba(0,0,0,.06), transparent 55%),
+                var(--paper);
+            padding: 96px 110px 80px;
+        }
+
+        /* Ruled legal paper lines effect */
+        .slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(to bottom, transparent, transparent 38px, rgba(31, 58, 138, 0.05) 39px, rgba(31, 58, 138, 0.05) 40px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slide.active {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 2;
+        }
+
+        /* Top Chrome */
+        .top-chrome {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 2px solid var(--ink);
+            padding-bottom: 16px;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .chrome-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 19px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+
+        .chrome-right {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        /* Typography */
+        .slide-h1 {
+            font-family: var(--font-display);
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.04;
+            letter-spacing: -0.03em;
+            color: var(--ink);
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .slide-subtitle {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 500;
+            line-height: 1.35;
+            color: var(--ink-soft);
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Pinned Cards with hard offset shadow */
+        .pinned-card {
+            background: var(--cream);
+            border: 2px solid var(--ink);
+            border-radius: 4px;
+            box-shadow: 6px 7px 0 0 var(--ink);
+            padding: 32px 30px;
+            position: relative;
+            z-index: 3;
+            transition: transform 0.2s ease;
+        }
+
+        .pinned-card.card-yellow {
+            background: var(--paper-2);
+        }
+
+        .pinned-card.card-extra {
+            background: var(--paper-extra);
+            transform: rotate(-0.5deg);
+        }
+
+        /* Pin SVG Component */
+        .safety-pin {
+            position: absolute;
+            top: -18px;
+            left: 24px;
+            width: 72px;
+            height: 28px;
+            transform: rotate(-10deg);
+            z-index: 4;
+            filter: drop-shadow(1px 2px 0px rgba(14,20,48,0.4));
+        }
+
+        .card-header-mono {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-h3 {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 18px;
+        }
+
+        /* Strict Bullets (Max 4, max 10 words) */
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .bullet-item {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            font-family: var(--font-display);
+            font-size: 21px;
+            line-height: 1.35;
+            color: var(--ink-deep);
+        }
+
+        .bullet-bullet {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        .hand-annotation {
+            font-family: var(--font-script);
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--red);
+            line-height: 1.1;
+            transform: rotate(-2deg);
+            margin-top: 20px;
+        }
+
+        /* Rubber Stamp Component */
+        .stamp-box {
+            display: inline-block;
+            border: 3px solid var(--red);
+            color: var(--red);
+            padding: 4px 14px;
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            transform: rotate(-3deg);
+            border-radius: 2px;
+        }
+
+        /* Layout Frameworks */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .grid-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 36px;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Flow Diagram using pinned tags */
+        .flow-board {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .flow-card {
+            flex: 1;
+            background: var(--cream);
+            border: 2px solid var(--ink);
+            border-radius: 4px;
+            box-shadow: 5px 5px 0 0 var(--ink);
+            padding: 24px 18px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .flow-script-num {
+            font-family: var(--font-script);
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 0.8;
+            margin-bottom: 6px;
+        }
+
+        .flow-step-name {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .flow-step-desc {
+            font-family: var(--font-display);
+            font-size: 16px;
+            line-height: 1.35;
+            color: var(--ink-soft);
+        }
+
+        .flow-pin-joint {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--ink);
+            padding: 0 4px;
+        }
+
+        /* Stat Paper Banner */
+        .stat-tape {
+            background: var(--paper-2);
+            border: 2px solid var(--ink);
+            border-radius: 4px;
+            box-shadow: 5px 5px 0 0 var(--ink);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin-top: 36px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .stat-block {
+            text-align: center;
+        }
+
+        .stat-numeral {
+            font-family: var(--font-display);
+            font-size: 54px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+
+        .stat-caption {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        /* Alert Callout */
+        .callout-specimen {
+            background: #FFEBEA;
+            border: 2px solid var(--red);
+            border-radius: 4px;
+            box-shadow: 5px 5px 0 0 var(--red);
+            padding: 26px 36px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-top: 32px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .callout-badge {
+            background: var(--red);
+            color: #FFF;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 8px 16px;
+            border-radius: 2px;
+            white-space: nowrap;
+        }
+
+        .callout-quote {
+            font-family: var(--font-script);
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.25;
+            color: #8C1F18;
+        }
+
+        /* Slide 1 Specifics */
+        .hero-devanagari {
+            font-family: var(--font-devanagari);
+            font-size: 130px;
+            color: var(--ink);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .hero-title-box {
+            display: flex;
+            align-items: baseline;
+            gap: 28px;
+            margin-bottom: 20px;
+        }
+
+        .hero-roman {
+            font-family: var(--font-display);
+            font-size: 78px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--ink);
+            line-height: 1;
+        }
+
+        .hero-tagline-text {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 1.35;
+            color: var(--ink-soft);
+            max-width: 1200px;
+            margin-bottom: 40px;
+        }
+
+        .founder-tape {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            border-top: 2px dashed var(--ink);
+            padding-top: 24px;
+            margin-top: 36px;
+            font-family: var(--font-mono);
+            font-size: 18px;
+            color: var(--ink);
+        }
+
+        /* Footer Chrome */
+        .bottom-chrome {
+            position: absolute;
+            left: 110px;
+            right: 110px;
+            bottom: 34px;
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink);
+            opacity: 0.7;
+            z-index: 3;
+        }
+
+        /* Deck Navigation Controls */
+        .deck-controls {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: var(--cream);
+            border: 2px solid var(--ink);
+            box-shadow: 3px 4px 0 0 var(--ink);
+            border-radius: 4px;
+            padding: 6px 20px;
+            z-index: 1000;
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ink);
+            cursor: pointer;
+            padding: 2px 8px;
+        }
+
+        .ctrl-btn:hover {
+            color: var(--red);
+        }
+
+        .ctrl-counter {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            color: var(--ink);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Animation reveals */
+        .slide.active .fade-1 {
+            animation: noteReveal 0.45s var(--ease-out-expo) forwards;
+        }
+        .slide.active .fade-2 {
+            animation: noteReveal 0.45s 0.1s var(--ease-out-expo) forwards;
+            opacity: 0;
+        }
+        .slide.active .fade-3 {
+            animation: noteReveal 0.45s 0.2s var(--ease-out-expo) forwards;
+            opacity: 0;
+        }
+
+        @keyframes noteReveal {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Safety Pin SVG Symbol Definition -->
+<svg style="display: none;">
+    <defs>
+        <g id="pin-svg">
+            <path d="M12,18 C28,12 52,14 68,16" stroke="#1F3A8A" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M10,18 C6,22 8,26 14,24 C20,22 18,16 12,16 Z" fill="#1F3A8A"/>
+            <path d="M68,16 C74,18 76,24 70,26 C64,28 60,24 64,18 L16,22" stroke="#1F3A8A" stroke-width="2.5" fill="none"/>
+        </g>
+    </defs>
+</svg>
+
+<div class="deck-viewport">
+    <div class="deck-stage" id="deckStage">
+
+        <!-- ==========================================
+             SLIDE 1: TITLE & VISION
+             ========================================== -->
+        <section class="slide active" id="slide-1">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span class="stamp-box">FIELD DISPATCH</span>
+                    <span>LOG NO. 2026-MUNIM</span>
+                </div>
+                <div class="chrome-right">LOCAL-FIRST KIRANA NOTEBOOK</div>
+            </div>
+
+            <div class="fade-1" style="position: relative; z-index: 3;">
+                <div class="hero-title-box">
+                    <div class="hero-devanagari">मुनीम</div>
+                    <div class="hero-roman">MUNIM</div>
+                    <div class="stamp-box" style="margin-left: 20px;">100% PRIVATE</div>
+                </div>
+
+                <div class="hero-tagline-text">
+                    Local-first bill diary and price-alert engine for Indian shopkeepers.
+                </div>
+            </div>
+
+            <div class="pinned-card fade-2" style="max-width: 1200px;">
+                <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                <div class="card-header-mono">
+                    <span>CORE WORKFLOW</span>
+                    <span>AUTOMATIC DESK ENTRY</span>
+                </div>
+                <ul class="bullet-list">
+                    <li class="bullet-item">
+                        <span class="bullet-bullet">▸</span>
+                        <span>Shopkeepers photograph supplier bills when goods arrive at the shop.</span>
+                    </li>
+                    <li class="bullet-item">
+                        <span class="bullet-bullet">▸</span>
+                        <span>On-device Gemma 3 vision model reads items, taxes, and totals.</span>
+                    </li>
+                    <li class="bullet-item">
+                        <span class="bullet-bullet">▸</span>
+                        <span>Flags supplier price hikes and tracks dues with zero cloud exposure.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="founder-tape fade-3" style="position: relative; z-index: 3;">
+                <span class="stamp-box" style="border-color: var(--ink); color: var(--ink);">FOUNDER</span>
+                <span>Ghanshyam Jha · B.Tech Computer Science</span>
+                <span style="margin-left: auto;">github.com/GhanshyamJha05/Munim</span>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · PROPOSAL</span>
+                <span>01 / 07</span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 2: THE PROBLEM
+             ========================================== -->
+        <section class="slide" id="slide-2">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span>SECTION 02</span>
+                    <span>·</span>
+                    <span>MARKET AUDIT</span>
+                </div>
+                <div class="chrome-right">RETAIL MARGIN THREATS</div>
+            </div>
+
+            <div class="slide-h1 fade-1">Small Retailers Bleed Margins In Paper Bills</div>
+            <div class="slide-subtitle fade-1">Kirana, pharmacies, and hardware stores operate on razor-thin 4% to 8% margins.</div>
+
+            <div class="grid-2col fade-2">
+                <div class="pinned-card card-yellow">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>OBSTACLE A</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">UNCHECKED</span>
+                    </div>
+                    <div class="card-h3">Hidden Price Hikes</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Distributor price hikes go completely unnoticed on paper bills.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Shopkeepers rarely compare line items with last month’s invoices.</span>
+                        </li>
+                    </ul>
+                    <div class="hand-annotation">Unnoticed inflation eats the entire 4–8% margin!</div>
+                </div>
+
+                <div class="pinned-card card-extra">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>OBSTACLE B</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">TOO COSTLY</span>
+                    </div>
+                    <div class="card-h3">Prohibitive Cloud OCR</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Cloud OCR costs ₹1,500 to ₹2,500 every single month.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Uploading bills exposes private supplier discount structures to third-party servers.</span>
+                        </li>
+                    </ul>
+                    <div class="hand-annotation">Why pay monthly just to read your own bills?</div>
+                </div>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · MARKET REALITY</span>
+                <span>02 / 07</span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 3: THE SOLUTION
+             ========================================== -->
+        <section class="slide" id="slide-3">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span>SECTION 03</span>
+                    <span>·</span>
+                    <span>THE REMEDY</span>
+                </div>
+                <div class="chrome-right">3 CRITICAL SAFEGUARDS</div>
+            </div>
+
+            <div class="slide-h1 fade-1">Snap A Photo. Get 3 Instant Safeguards.</div>
+            <div class="slide-subtitle fade-1">A local digital Munim operating privately inside the shopkeeper's desktop computer.</div>
+
+            <div class="grid-3col fade-2">
+                <div class="pinned-card">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">SAFEGUARD 01</div>
+                    <div class="card-h3">Price-Change Alerts</div>
+                    <div style="font-size: 18px; line-height: 1.4; color: var(--ink-soft); margin-bottom: 16px;">
+                        Compares line items against supplier history to detect silent rate spikes and unit-cost increases.
+                    </div>
+                    <div class="hand-annotation" style="font-size: 26px;">Protects profit margins</div>
+                </div>
+
+                <div class="pinned-card card-yellow">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">SAFEGUARD 02</div>
+                    <div class="card-h3">Supplier Dues Ledger</div>
+                    <div style="font-size: 18px; line-height: 1.4; color: var(--ink-soft); margin-bottom: 16px;">
+                        Tracks running credit balances, overdue payment dates, and payment settlement via Cash or UPI.
+                    </div>
+                    <div class="hand-annotation" style="font-size: 26px;">Zero payment disputes</div>
+                </div>
+
+                <div class="pinned-card card-extra">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">SAFEGUARD 03</div>
+                    <div class="card-h3">CA & Tally Pack</div>
+                    <div style="font-size: 18px; line-height: 1.4; color: var(--ink-soft); margin-bottom: 16px;">
+                        One-click generation of audit-ready purchase registers and direct CSV packs for Tally Prime.
+                    </div>
+                    <div class="hand-annotation" style="font-size: 26px;">Ready for accountant</div>
+                </div>
+            </div>
+
+            <!-- Hand-pinned Alert Specimen Card -->
+            <div class="callout-specimen fade-3">
+                <svg class="safety-pin" style="top: -16px; left: 16px;"><use href="#pin-svg"/></svg>
+                <div class="callout-badge">Live Alert Specimen</div>
+                <div class="callout-quote">
+                    "Parle-G 12-pack is 4.2% higher than your last bill from Sharma Distributors (₹118.00 → ₹123.00)."
+                </div>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · THREE SAFEGUARDS</span>
+                <span>03 / 07</span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 4: HOW IT WORKS & TECH MOAT
+             ========================================== -->
+        <section class="slide" id="slide-4">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span>SECTION 04</span>
+                    <span>·</span>
+                    <span>TECHNICAL MOAT</span>
+                </div>
+                <div class="chrome-right">100% OFFLINE PIPELINE</div>
+            </div>
+
+            <div class="slide-h1 fade-1">How It Works: On-Device Vision Engine</div>
+            <div class="slide-subtitle fade-1">Fast on-device vision extraction coupled with strict arithmetic and GST verification.</div>
+
+            <!-- Pinned Flow Cards -->
+            <div class="flow-board fade-2">
+                <div class="flow-card">
+                    <svg class="safety-pin" style="width: 50px; top: -14px; left: 12px;"><use href="#pin-svg"/></svg>
+                    <div class="flow-script-num">Step 1</div>
+                    <div class="flow-step-name">Upload</div>
+                    <div class="flow-step-desc">Phone camera via Wi-Fi QR code or desktop drag-and-drop</div>
+                </div>
+                <div class="flow-pin-joint">→</div>
+
+                <div class="flow-card" style="background: var(--paper-2);">
+                    <svg class="safety-pin" style="width: 50px; top: -14px; left: 12px;"><use href="#pin-svg"/></svg>
+                    <div class="flow-script-num">Step 2</div>
+                    <div class="flow-step-name">Image Tiling</div>
+                    <div class="flow-step-desc">Slices tall receipts with 15% overlap to avoid blur</div>
+                </div>
+                <div class="flow-pin-joint">→</div>
+
+                <div class="flow-card">
+                    <svg class="safety-pin" style="width: 50px; top: -14px; left: 12px;"><use href="#pin-svg"/></svg>
+                    <div class="flow-script-num">Step 3</div>
+                    <div class="flow-step-name">Local Gemma 3</div>
+                    <div class="flow-step-desc">Runs via Ollama (4B/12B/27B) with deterministic decoding</div>
+                </div>
+                <div class="flow-pin-joint">→</div>
+
+                <div class="flow-card" style="background: var(--paper-extra);">
+                    <svg class="safety-pin" style="width: 50px; top: -14px; left: 12px;"><use href="#pin-svg"/></svg>
+                    <div class="flow-script-num">Step 4</div>
+                    <div class="flow-step-name">Validators</div>
+                    <div class="flow-step-desc">Go engine verifies GSTIN Luhn-36 & line arithmetic</div>
+                </div>
+                <div class="flow-pin-joint">→</div>
+
+                <div class="flow-card">
+                    <svg class="safety-pin" style="width: 50px; top: -14px; left: 12px;"><use href="#pin-svg"/></svg>
+                    <div class="flow-script-num">Step 5</div>
+                    <div class="flow-step-name">SQLite Ledger</div>
+                    <div class="flow-step-desc">Price spikes flagged and dues updated in private local DB</div>
+                </div>
+            </div>
+
+            <div class="stat-tape fade-3">
+                <div class="stat-block">
+                    <div class="stat-numeral">100%</div>
+                    <div class="stat-caption">Runs Completely Offline</div>
+                </div>
+                <div style="width: 2px; height: 50px; background: var(--ink);"></div>
+                <div class="stat-block">
+                    <div class="stat-numeral">₹0.00</div>
+                    <div class="stat-caption">Per-Bill OCR Cost (Always)</div>
+                </div>
+                <div style="width: 2px; height: 50px; background: var(--ink);"></div>
+                <div class="stat-block">
+                    <div class="stat-numeral">3 Sizes</div>
+                    <div class="stat-caption">Gemma 3 4B, 12B, & 27B</div>
+                </div>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · SYSTEM PIPELINE</span>
+                <span>04 / 07</span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 5: WHY LOCAL AI
+             ========================================== -->
+        <section class="slide" id="slide-5">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span>SECTION 05</span>
+                    <span>·</span>
+                    <span>DIFFERENTIATOR</span>
+                </div>
+                <div class="chrome-right">SOVEREIGN TRADE DATA</div>
+            </div>
+
+            <div class="slide-h1 fade-1">Why Local AI Is The Only Plausible Architecture</div>
+            <div class="slide-subtitle fade-1">Resolving the structural privacy and cost barriers preventing SME software adoption.</div>
+
+            <div class="grid-2col fade-2">
+                <div class="pinned-card card-yellow">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>DEFENSE 01</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">CONFIDENTIAL</span>
+                    </div>
+                    <div class="card-h3">Trade Pricing Sovereignty</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>Distributor discounts remain strictly confidential to the owner.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>No vendor lock-in or third-party corporate data-harvesting.</span>
+                        </li>
+                    </ul>
+                    <div class="hand-annotation">Indian trade runs on trust & private margins!</div>
+                </div>
+
+                <div class="pinned-card card-extra">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>DEFENSE 02</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">LOCAL HARDWARE</span>
+                    </div>
+                    <div class="card-h3">Zero Marginal Cost & Bilingual</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>Runs on shop PCs already handling billing or WhatsApp.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>Seamlessly parses Hindi, English, and Hinglish invoice formats.</span>
+                        </li>
+                    </ul>
+                    <div class="hand-annotation">No internet needed to reconcile today's delivery.</div>
+                </div>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · PRIVACY MOAT</span>
+                <span>05 / 07</span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 6: BUSINESS MODEL & TRACTION
+             ========================================== -->
+        <section class="slide" id="slide-6">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span>SECTION 06</span>
+                    <span>·</span>
+                    <span>COMMERCIALIZATION</span>
+                </div>
+                <div class="chrome-right">REVENUE CHANNELS</div>
+            </div>
+
+            <div class="slide-h1 fade-1">Business Model & Tangible Traction</div>
+            <div class="slide-subtitle fade-1">Hardware appliance packaging and flat support without taxing merchants per bill.</div>
+
+            <div class="grid-2col fade-2">
+                <div class="pinned-card card-yellow">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>MODEL A</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">HARDWARE</span>
+                    </div>
+                    <div class="card-h3">Munim Box (Mini-PC)</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Pre-configured, plug-and-play mini-PC at ₹9,999 to ₹14,999.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>No cloud setup required; boots up directly on shop Wi-Fi.</span>
+                        </li>
+                    </ul>
+                    <div class="hand-annotation">Familiar one-time hardware purchase for merchants.</div>
+                </div>
+
+                <div class="pinned-card card-extra">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>MODEL B</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">SOFTWARE</span>
+                    </div>
+                    <div class="card-h3">Flat Software Support</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Flat subscription of ₹299 to ₹499 per month.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">—</span>
+                            <span>Includes updates and models without metering per bill.</span>
+                        </li>
+                    </ul>
+                    <div class="hand-annotation">Zero meter anxiety — scan 50 or 5,000 bills!</div>
+                </div>
+            </div>
+
+            <div class="stat-tape fade-3" style="margin-top: 28px; padding: 18px 40px;">
+                <div class="stat-block">
+                    <div class="stat-numeral" style="font-size: 40px;">Working App</div>
+                    <div class="stat-caption">Single Go binary + SQLite</div>
+                </div>
+                <div style="width: 2px; height: 40px; background: var(--ink);"></div>
+                <div class="stat-block">
+                    <div class="stat-numeral" style="font-size: 40px;">Live Demo</div>
+                    <div class="stat-caption">Client deployed on Vercel</div>
+                </div>
+                <div style="width: 2px; height: 40px; background: var(--ink);"></div>
+                <div class="stat-block">
+                    <div class="stat-numeral" style="font-size: 40px;">30 Invoices</div>
+                    <div class="stat-caption">Synthetic evaluation harness</div>
+                </div>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · COMMERCIAL MODEL</span>
+                <span>06 / 07</span>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 7: ROADMAP & THE ASK
+             ========================================== -->
+        <section class="slide" id="slide-7">
+            <div class="top-chrome">
+                <div class="chrome-left">
+                    <span>SECTION 07</span>
+                    <span>·</span>
+                    <span>THE ROAD AHEAD</span>
+                </div>
+                <div class="chrome-right">NEXT STEPS & THE ASK</div>
+            </div>
+
+            <div class="slide-h1 fade-1">Product Roadmap & Founder Ask</div>
+            <div class="slide-subtitle fade-1">Next technical milestones and partnership support needed for market launch.</div>
+
+            <div class="grid-2col fade-2">
+                <div class="pinned-card card-yellow">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span>HORIZON</span>
+                        <span>Q1–Q2</span>
+                    </div>
+                    <div class="card-h3">Engineering Milestones</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>Multi-page PDF invoice processing with automated batch tiling.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>Higher accuracy on informal handwritten supplier slips.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>LAN Telegram bot integration for background camera uploads.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">▸</span>
+                            <span>Conducting initial 10-shop pilot in local market cluster.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pinned-card card-extra" style="border-color: var(--red);">
+                    <svg class="safety-pin"><use href="#pin-svg"/></svg>
+                    <div class="card-header-mono">
+                        <span style="color: var(--red);">THE ASK</span>
+                        <span class="stamp-box" style="padding: 2px 8px; font-size: 13px;">PARTNERSHIP</span>
+                    </div>
+                    <div class="card-h3">What We Need Today</div>
+                    <ul class="bullet-list">
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">✦</span>
+                            <span>Introductions to kirana or pharmacy pilot shops for trials.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">✦</span>
+                            <span>Mentorship on SME hardware distribution and retail channels.</span>
+                        </li>
+                        <li class="bullet-item">
+                            <span class="bullet-bullet">✦</span>
+                            <span>Technical feedback on local vision fine-tuning for Gemma 3.</span>
+                        </li>
+                    </ul>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1.5px dashed var(--ink); padding-top: 14px; margin-top: 20px;">
+                        <span style="font-family: var(--font-mono); font-size: 15px; font-weight: 500;">github.com/GhanshyamJha05/Munim</span>
+                        <span class="stamp-box" style="font-size: 12px; padding: 2px 8px;">munim-web-sooty.vercel.app</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-chrome">
+                <span>MUNIM NOTEBOOK · CLOSING BRIEF</span>
+                <span>07 / 07</span>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- ==========================================
+     PRESENTATION CONTROLLER
+     ========================================== -->
+<div class="deck-controls">
+    <button class="ctrl-btn" id="prevBtn" title="Previous Slide (Left Arrow)">←</button>
+    <span class="ctrl-counter" id="slideCounter">01 / 07</span>
+    <button class="ctrl-btn" id="nextBtn" title="Next Slide (Right Arrow)">→</button>
+</div>
+
+<script>
+(function() {
+    const stage = document.getElementById('deckStage');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const counter = document.getElementById('slideCounter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    // Fixed 16:9 uniform scaling
+    function scaleStage() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const stageW = 1920;
+        const stageH = 1080;
+
+        const scale = Math.min(vw / stageW, vh / stageH);
+        const left = (vw - stageW * scale) / 2;
+        const top = (vh - stageH * scale) / 2;
+
+        stage.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+    }
+
+    window.addEventListener('resize', scaleStage);
+    scaleStage();
+
+    function showSlide(index) {
+        if (index < 0 || index >= totalSlides) return;
+        
+        slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === index);
+        });
+
+        currentSlide = index;
+        counter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) showSlide(currentSlide - 1);
+    }
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+            e.preventDefault();
+            nextSlide();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault();
+            prevSlide();
+        } else if (e.key === 'Home') {
+            e.preventDefault();
+            showSlide(0);
+        } else if (e.key === 'End') {
+            e.preventDefault();
+            showSlide(totalSlides - 1);
+        }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) nextSlide();
+        if (touchEndX - touchStartX > 50) prevSlide();
+    }, { passive: true });
+
+})();
+</script>
+
+</body>
+</html>
